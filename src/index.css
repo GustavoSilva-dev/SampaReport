@@ -3,6 +3,11 @@
 
 * {
   font-family: "Momo Trust Display", sans-serif;
+  scroll-behavior: smooth;
+}
+
+.font-momo {
+  font-family: "Momo Trust Display", sans-serif;
 }
 
 body {
