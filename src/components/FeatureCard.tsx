@@ -3,7 +3,6 @@ export type FeatureIcon = 'pin' | 'users' | 'check'
 export type FeatureCardProps = {
   image?: string
   index: number
-  eyebrow: string
   title: string
   description: string
 }

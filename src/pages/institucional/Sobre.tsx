@@ -1,5 +1,6 @@
 import { Footer } from '../../components/Footer'
 import { Header } from '../../components/Header'
+import { FeatureCard } from '../../components/FeatureCard'
 
 const pillars = [
   {
@@ -77,12 +78,7 @@ function Sobre() {
             <h2 className="mt-3 max-w-xl text-3xl font-medium tracking-[-.05em] sm:text-5xl">Do primeiro relato à solução.</h2>
             <div className="mt-12 grid gap-0 border-l border-white/20 md:grid-cols-5 md:border-l-0 md:border-t">
               {steps.map(([title, description], index) => (
-                <article key={title} className="relative border-b border-white/20 px-6 py-6 first:pt-0 md:border-b-0 md:border-r md:px-5 md:pt-7 md:first:pt-7">
-                  <span className="absolute -left-[5px] top-0 h-2.5 w-2.5 rounded-full bg-emerald-400 md:-top-[5px] md:left-0" />
-                  <span className="font-mono text-[10px] text-emerald-300">0{index + 1}</span>
-                  <h3 className="mt-5 text-sm font-medium">{title}</h3>
-                  <p className="mt-3 text-xs leading-6 text-white/60">{description}</p>
-                </article>
+                <FeatureCard title={title} description={description} index={index} key={title} />
               ))}
             </div>
           </div>
