@@ -3,6 +3,7 @@ import Faq from './pages/institucional/Faq'
 import Home from './pages/institucional/Home'
 import Integrantes from './pages/institucional/Integrantes'
 import Sobre from './pages/institucional/Sobre'
+import Contato from './pages/institucional/Contato'
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/sobre" element={<Sobre />} />
         <Route path="/integrantes" element={<Integrantes />} />
         <Route path="/faq" element={<Faq />} />
+        <Route path="/contato" element={<Contato />} />
       </Routes>
     </Router>
   )
