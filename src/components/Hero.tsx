@@ -1,11 +1,11 @@
-import cityImage from '../assets/cidade-sp.gif'
+import spGif from '../assets/sp.gif'
 
 export function Hero() {
   return (
     <section className="mx-auto grid min-h-[610px] max-w-[1240px] grid-cols-1 gap-11 px-6 pb-16 pt-12 sm:px-10 sm:pb-24 sm:pt-[72px] lg:grid-cols-[minmax(0,.92fr)_minmax(420px,1.08fr)] lg:gap-[8%] font-medium" id="plataforma">
-      <div className="self-center lg:pb-5">
+      <div className="reveal-up self-center lg:pb-5">
         <div className="mb-7 flex items-center gap-2 text-[10px] font-mono uppercase tracking-[.12em] text-[#12a879]">
-          <span className="h-[7px] w-[7px] rounded-full bg-[#f5a943]" /> Global Solution FIAP · 2026
+          <span className="h-[7px] w-[7px] rounded-full" /> Global Solution FIAP · 2026
         </div>
         <h1 className="text-[clamp(53px,6vw,88px)] font-medium leading-[.96] tracking-[-.075em] text-[#173b36]">
           A cidade que<br /><em className="not-italic text-[#12a879] animate-pulse">escuta</em> transforma.
@@ -25,14 +25,15 @@ export function Hero() {
         </div>
       </div>
 
-      <div className="relative">
-        <div className="relative h-[390px] overflow-hidden sm:h-[480px]">
-          <img className="h-full w-full object-cover [filter:sepia(.25)_contrast(1.05)]" src={cityImage} alt="Vista histórica do centro de São Paulo" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent from-45% to-[#173b3699]" />
-          <span className="absolute bottom-6 left-6 font-mono text-[10px] uppercase leading-[1.7] tracking-[.1em] text-[#f8f2e7]">
-            São Paulo, 1950<br /><b className="font-sans text-[13px] font-medium normal-case tracking-normal text-white">Uma cidade em movimento</b>
+      <div className="reveal-image reveal-delay-2 relative  transition-transform">
+        <div className="relative overflow-hidden sm:h-[600px] rounded-lg border-5 border-emerald-600">
+          <div className="absolute inset-0 z-10 bg-gradient-to-b from-transparent to-[#173b36]" />
+          <img className="h-full w-full object-cover [filter:sepia(.25)_contrast(1.05)] rotate-img absolute scale-105" src={spGif} alt="Vista histórica do centro de São Paulo"/>
+          <span className="absolute bottom-6 left-6 font-mono text-[10px] uppercase leading-[1.7] tracking-[.1em] text-[#f8f2e7] z-100">
+            - São Paulo, 2025<br /><b className="font-sans text-[13px] font-medium normal-case tracking-normal text-white animate-pulse">Uma cidade em movimento</b>
           </span>
         </div>
+
         <div className="mt-5 flex items-center gap-3 font-mono text-[9px] uppercase leading-[1.5] tracking-[.08em] text-[#87958f]">
           <span className="h-px w-9 bg-[#f5a943]" /> <span>Memória para<br />construir o futuro</span>
         </div>

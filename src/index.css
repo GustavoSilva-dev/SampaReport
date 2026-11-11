@@ -6,12 +6,78 @@
   scroll-behavior: smooth;
 }
 
+html {
+  background: linear-gradient(90deg, #ffffff 0%, #e8fff0 65%, #8dffb5 95%);
+}
+
 .font-momo {
   font-family: "Momo Trust Display", sans-serif;
 }
 
-body {
-  background: linear-gradient(34deg, #ffffff 75%, #34bc63 100%);
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(-2deg);
+  }
+  to {
+    transform: rotate(2deg);
+  }
+}
+
+@keyframes reveal-image {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.reveal-up {
+  animation: reveal-up 1s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.rotate-img {
+  animation: rotate 4s ease-in-out infinite alternate;
+}
+
+.reveal-image {
+  animation: reveal-image 900ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.reveal-delay-1 {
+  animation-delay: 100ms;
+}
+
+.reveal-delay-2 {
+  animation-delay: 200ms;
+}
+
+.reveal-delay-3 {
+  animation-delay: 300ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
+  }
 }
 
 .btn {

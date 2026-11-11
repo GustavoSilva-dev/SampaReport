@@ -38,10 +38,10 @@ const technologies = [
 function Sobre() {
   return (
     <div className="min-h-screen overflow-hidden font-momo text-zinc-900">
-      <Header />
-      <main>
+      <Header active="sobre"/>
+      <main className="reveal-up">
         <section className="mx-auto max-w-[1240px] px-6 pt-16 sm:px-10 sm:pb-28 sm:pt-24 md:pb-10">
-          <div className="max-w-4xl">
+          <div className="reveal-up max-w-4xl">
             <p className="mb-6 text-[10px] uppercase tracking-[.16em] text-emerald-600">Sobre o SampaReport</p>
             <h1 className="max-w-4xl text-[clamp(44px,7vw,86px)] text-[#183c36] font-medium leading-[1] tracking-[-.07em]">
               Zeladoria inteligente <span className="text-emerald-500 animate-pulse">e transparente.</span>
@@ -62,9 +62,9 @@ function Sobre() {
             <p className="max-w-xs text-xs leading-6 text-zinc-600">Uma plataforma feita para transformar relatos cotidianos em ações públicas verificáveis.</p>
           </div>
           <div className="grid gap-4 md:grid-cols-3">
-            {pillars.map((pillar) => (
-              <article key={pillar.number} className="rounded-xl border-t-2 border-zinc-200 bg-white p-7 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500 hover:shadow-lg">
-                <span className="text-xs text-emerald-600">{pillar.number}</span>
+            {pillars.map((pillar, index) => (
+              <article key={pillar.number} className={`reveal-up reveal-delay-${index + 1} rounded-xl border-t-2 border-zinc-200 bg-white p-7 transition-all duration-300 shadow-md hover:-translate-y-1 hover:border-emerald-500 hover:shadow-lg`}>
+                <span className="text-xs text-emerald-600 border-1 rounded-3xl p-2">{pillar.number}</span>
                 <h3 className="mt-14 text-xl font-medium tracking-[-.03em]">{pillar.title}</h3>
                 <p className="mt-3 text-xs leading-6 text-zinc-600">{pillar.description}</p>
               </article>
@@ -89,8 +89,8 @@ function Sobre() {
           <div className="mt-3 grid gap-10 md:grid-cols-[.8fr_1.2fr]">
             <h2 className="text-3xl font-medium tracking-[-.05em] sm:text-5xl">Construído para evoluir com a cidade.</h2>
             <div className="grid gap-3 sm:grid-cols-2">
-              {technologies.map(([name, tools]) => (
-                <article key={name} className="rounded-xl border border-zinc-200 bg-white p-5 transition-colors hover:border-emerald-400">
+              {technologies.map(([name, tools], index) => (
+                <article key={name} className={`reveal-up reveal-delay-${(index % 3) + 1} rounded-xl border border-zinc-200 bg-white p-5 transition-colors hover:border-emerald-400`}>
                   <h3 className="text-sm font-medium text-emerald-600">{name}</h3>
                   <p className="mt-3 text-xs leading-6 text-zinc-600">{tools}</p>
                 </article>
