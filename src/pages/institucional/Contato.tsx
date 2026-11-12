@@ -105,7 +105,7 @@ function Contato() {
                   aria-invalid={Boolean(errors.name)}
                   type="text"
                 />
-                {errors.name && <p className="mt-2 text-sm text-red-500" id="name-error">{errors.name}</p>}
+                {errors.name && <p className="mt-2 text-sm text-red-500 mb-[-10px]" id="name-error">{errors.name}</p>}
               </div>
 
               <div>
@@ -120,7 +120,7 @@ function Contato() {
                   aria-invalid={Boolean(errors.email)}
                   type="email"
                 />
-                {errors.email && <p className="mt-2 text-sm text-red-500" id="email-error">{errors.email}</p>}
+                {errors.email && <p className="mt-2 text-sm text-red-500 mb-[-10px]" id="email-error">{errors.email}</p>}
               </div>
 
               <div>
@@ -139,7 +139,7 @@ function Contato() {
                   <option value="sugestao">Sugestão</option>
                   <option value="suporte">Suporte técnico</option>
                 </select>
-                {errors.subject && <p className="mt-2 text-sm text-red-500" id="subject-error">{errors.subject}</p>}
+                {errors.subject && <p className="mt-2 text-sm text-red-500 mb-[-10px]" id="subject-error">{errors.subject}</p>}
               </div>
 
               <div>
@@ -154,7 +154,7 @@ function Contato() {
                   aria-invalid={Boolean(errors.message)}
                   rows={4}
                 />
-                {errors.message && <p className="mt-2 text-sm text-red-500" id="message-error">{errors.message}</p>}
+                {errors.message && <p className="mt-2 text-sm text-red-500 mb-[-10px]" id="message-error">{errors.message}</p>}
               </div>
 
               <button className="w-full rounded-lg bg-emerald-500 px-5 py-4 text-sm font-medium text-white transition hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 sm:w-auto" type="submit">

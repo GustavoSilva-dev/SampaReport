@@ -24,9 +24,9 @@ export function Hero() {
       </div>
 
       <div className="reveal-image reveal-delay-2 relative  transition-transform">
-        <div className="relative overflow-hidden sm:h-[600px] rounded-lg border-5 border-emerald-600">
+        <div className="relative overflow-hidden h-[600px] rounded-lg border-5 border-emerald-600">
           <div className="absolute inset-0 z-10 bg-gradient-to-b from-transparent to-[#173b36]" />
-          <img className="h-full w-full object-cover [filter:sepia(.25)_contrast(1.05)] rotate-img absolute scale-105" src={spGif} alt="Vista histórica do centro de São Paulo"/>
+          <img className="h-full w-full object-cover [filter:sepia(.25)_contrast(1.05)] movement-img absolute scale-120" src={spGif} alt="Vista histórica do centro de São Paulo"/>
           <span className="absolute bottom-6 left-6 font-mono text-[10px] uppercase leading-[1.7] tracking-[.1em] text-[#f8f2e7] z-100">
             - São Paulo, 2025<br /><b className="font-sans text-[13px] font-medium normal-case tracking-normal text-white animate-pulse">Uma cidade em movimento</b>
           </span>

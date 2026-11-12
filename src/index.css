@@ -25,12 +25,40 @@ html {
   }
 }
 
-@keyframes rotate {
+@keyframes moveRight {
   from {
-    transform: rotate(-2deg);
+    opacity: 0;
+    transform: translateX(-18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.moveRight {
+  animation: moveRight 2s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.moveRight-delay-1 {
+  animation-delay: 200ms;
+}
+
+.moveRight-delay-2 {
+  animation-delay: 400ms;
+}
+
+.moveRight-delay-3 {
+  animation-delay: 600ms;
+}
+
+@keyframes movement {
+  from {
+    transform: translateX(-15px);
   }
   to {
-    transform: rotate(2deg);
+    transform: translateX(15px);
   }
 }
 
@@ -49,8 +77,8 @@ html {
   animation: reveal-up 1s cubic-bezier(.22, 1, .36, 1) both;
 }
 
-.rotate-img {
-  animation: rotate 4s ease-in-out infinite alternate;
+.movement-img {
+  animation: movement 4s ease-in-out infinite alternate;
 }
 
 .reveal-image {

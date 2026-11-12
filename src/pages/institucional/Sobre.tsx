@@ -47,7 +47,7 @@ function Sobre() {
               Zeladoria inteligente <span className="text-emerald-500 animate-pulse">e transparente.</span>
             </h1>
             <p className="mt-8 max-w-2xl text-sm leading-7 text-zinc-600 sm:text-base">
-              O SampaReport nasceu para diminuir a lentidão e a falta de transparência nos chamados de infraestrutura urbana de São Paulo.
+              O SampaReport nasceu para diminuir a lentidão e a falta de transparência nos chamados de infraestrutura urbana de São Paulo (que atualmente ocorrem pelo portal SP156).
               Conectamos quem vive a cidade a quem pode transformá-la, com evidências, participação e acompanhamento em cada etapa.
             </p>
           </div>

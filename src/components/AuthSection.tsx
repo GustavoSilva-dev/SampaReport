@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import prefeituraLogo from '../assets/prefeitura-logo.png'
 
 type AuthMode = 'login' | 'register'
 type UserRole = 'ROLE_USER' | 'ROLE_ADMIN'
@@ -96,21 +97,22 @@ function AuthSection() {
     <section className="mx-auto max-w-[1240px] px-6 pt-8 sm:px-10 sm:pt-12" aria-labelledby="auth-title">
       <div className="grid items-start gap-10 lg:grid-cols-[.9fr_1.1fr] lg:gap-20">
         <div className="max-w-md lg:pt-32">
-          <div className="mb-7 flex items-center gap-2 text-[10px] font-mono uppercase tracking-[.12em] text-[#12a879]">
-          <span className="h-[6px] w-[6px] rounded-full bg-green-300 animate-ping" />Global Solution FIAP · 2026
+          <div className="mb-7 flex items-center gap-2 text-[10px] font-mono uppercase tracking-[.12em] text-[#12a879] moveRight moveRight-delay-1">
+          <span className="h-[6px] w-[6px] rounded-full bg-green-300 animate-ping" />Global Solution FIAP · 2026 · Citizen Tech
+          <img className="h-7 w-auto z-100 ml-2" src={prefeituraLogo} alt="Prefeitura de São Paulo" />
           </div>
 
-          <h1 className="text-[clamp(34px,5vw,54px)] md:text-[70px] font-extrabold tracking-[-.08em] text-[#183c36] justify-center">
+          <h1 className="text-[clamp(34px,5vw,54px)] md:text-[70px] font-extrabold tracking-[-.08em] text-[#183c36] justify-center moveRight moveRight-delay-3">
             Sampa<span className="text-[#12a879] animate-pulse">Report</span>
           </h1>
-          <div className="mt-8 flex items-center gap-3 text-[10px] uppercase tracking-[.14em] text-emerald-600">
+          <div className="mt-8 flex items-center gap-3 text-[10px] uppercase tracking-[.14em] text-emerald-600 moveRight moveRight-delay-2">
             <span className="h-px w-9 bg-emerald-500" />
             Tecnologia para uma cidade mais participativa
             <span className="h-px w-9 bg-emerald-500" />
           </div>
         </div>
 
-        <div className="rounded-2xl border border-emerald-100 bg-white/70 p-6 shadow-sm backdrop-blur-sm sm:p-8">
+        <div className="rounded-2xl border border-emerald-100 bg-white/70 p-6 shadow-sm backdrop-blur-sm sm:p-8 reveal-delay-3">
           <div className="mb-7 text-center">
             <p className="text-[10px] uppercase tracking-[.16em] text-emerald-600">Acesso à plataforma</p>
             <h2 className="mt-3 text-2xl font-medium tracking-[-.05em] text-[#183c36]" id="auth-title">
