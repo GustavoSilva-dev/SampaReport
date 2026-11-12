@@ -1,12 +1,10 @@
+import { Link } from 'react-router'
 import spGif from '../assets/sp.gif'
 
 export function Hero() {
   return (
-    <section className="mx-auto grid min-h-[610px] max-w-[1240px] grid-cols-1 gap-11 px-6 pb-16 pt-12 sm:px-10 sm:pb-24 sm:pt-[72px] lg:grid-cols-[minmax(0,.92fr)_minmax(420px,1.08fr)] lg:gap-[8%] font-medium" id="plataforma">
+    <section className="mx-auto grid min-h-[610px] max-w-[1240px] grid-cols-1 gap-11 px-6 pb-16 pt-12 sm:px-10 sm:pb-24 sm:pt-[72px] lg:grid-cols-[minmax(0,.92fr)_minmax(420px,1.08fr)] lg:gap-[8%] font-medium">
       <div className="reveal-up self-center lg:pb-5">
-        <div className="mb-7 flex items-center gap-2 text-[10px] font-mono uppercase tracking-[.12em] text-[#12a879]">
-          <span className="h-[7px] w-[7px] rounded-full" /> Global Solution FIAP · 2026
-        </div>
         <h1 className="text-[clamp(53px,6vw,88px)] font-medium leading-[.96] tracking-[-.075em] text-[#173b36]">
           A cidade que<br /><em className="not-italic text-[#12a879] animate-pulse">escuta</em> transforma.
         </h1>
@@ -19,9 +17,9 @@ export function Hero() {
             Acessar Plataforma <span aria-hidden="true">↗</span>
           </a>
             
-          <a className="border-b border-[#bdc9c4] pb-1.5 text-xs text-[#52635d]" href="#dados">
+          <Link to="/sobre" className="border-b border-[#bdc9c4] pb-1.5 text-xs text-[#52635d]">
             Conheça o projeto <span className="ml-3 text-[#12a879]" aria-hidden="true">↓</span>
-          </a>
+          </Link>
         </div>
       </div>
 
