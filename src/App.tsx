@@ -4,6 +4,7 @@ import Home from './pages/institucional/Home'
 import Integrantes from './pages/institucional/Integrantes'
 import Sobre from './pages/institucional/Sobre'
 import Contato from './pages/institucional/Contato'
+import FeedPage from './pages/app/FeedPage'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/integrantes" element={<Integrantes />} />
         <Route path="/faq" element={<Faq />} />
         <Route path="/contato" element={<Contato />} />
+        <Route path="/plataforma/feed" element={<FeedPage />} />
       </Routes>
     </Router>
   )
