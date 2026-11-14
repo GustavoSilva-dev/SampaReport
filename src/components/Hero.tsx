@@ -14,11 +14,11 @@ export function Hero() {
         </p>
         <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-7">
           <a className="inline-flex items-center gap-6 bg-[#12a879] px-5 py-4 text-xs font-medium text-white transition-transform hover:-translate-y-0.5 hover:shadow-lg rounded-xl" href="#plataforma">
-            Acessar Plataforma <span aria-hidden="true">↗</span>
+            Acessar Plataforma <span aria-hidden="true">↑</span>
           </a>
             
           <Link to="/sobre" className="border-b border-[#bdc9c4] pb-1.5 text-xs text-[#52635d]">
-            Conheça o projeto <span className="ml-3 text-[#12a879]" aria-hidden="true">↓</span>
+            Conheça o projeto <span className="ml-3 text-[#12a879]" aria-hidden="true">→</span>
           </Link>
         </div>
       </div>
@@ -33,7 +33,7 @@ export function Hero() {
         </div>
 
         <div className="mt-5 flex items-center gap-3 font-mono text-[9px] uppercase leading-[1.5] tracking-[.08em] text-[#87958f]">
-          <span className="h-px w-9 bg-[#f5a943]" /> <span>Memória para<br />construir o futuro</span>
+          <span className="h-px w-9 bg-[#f5a943]" /> <span>Movimento para<br />construir o futuro</span>
         </div>
       </div>
     </section>
