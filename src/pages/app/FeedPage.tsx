@@ -24,7 +24,7 @@ const reports: Report[] = [
     endereco: 'Rua dos Pinheiros, Bela Vista',
     dataCriacao: 'Ontem',
     status: 'Aguardando Atendimento',
-    quantidadeApoios: 2,
+    quantidadeApoios: 8,
     imagemUrl: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=900&q=80',
     autor: { id: 'user-2', nome: 'Carlos Mendes', email: 'carlos@example.com', role: 'ROLE_USER' },
   },
@@ -35,7 +35,7 @@ const reports: Report[] = [
     categoria: 'Iluminação',
     endereco: 'Rua Haddock Lobo, Jardins',
     dataCriacao: 'há 1 dia',
-    status: 'Em análise',
+    status: 'Em Andamento',
     quantidadeApoios: 5,
     imagemUrl: 'https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=900&q=80',
     autor: { id: 'user-3', nome: 'Ana Souza', email: 'ana@example.com', role: 'ROLE_USER' },
@@ -74,9 +74,8 @@ function FeedPage() {
           <aside className="moveRight moveRight-delay-1 sticky top-20 rounded-xl border border-zinc-200 bg-white p-2.5 shadow-sm">
             <h2 className="px-0.5 py-1 text-sm font-medium">Mapa de Ocorrências</h2>
             <div className="mt-1 h-[294px] rounded-lg border border-dashed border-zinc-200 bg-white" aria-label="Área reservada para o mapa de ocorrências" />
-            <div className="mt-2 rounded-lg border border-zinc-200 bg-emerald-700 px-3 py-2.5 text-[10px] leading-4 text-white">
-              <span className="mr-2 text-sm text-white">♧</span>
-              Apoio comunitário - Ocorrências com 5 apoios entram com prioridade para o sistema da Prefeitura
+            <div className="mt-2 rounded-lg border border-zinc-200 bg-gradient-to-r from-emerald-500 to-emerald-700 px-3 py-2.5 text-[11px] leading-4 text-white">
+              <span className="underline">Apoio comunitário:</span><br/> Apenas ocorrências com 5 apoios entram para o painel de chamados da Prefeitura
             </div>
           </aside>
         </div>
