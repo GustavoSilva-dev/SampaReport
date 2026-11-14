@@ -79,6 +79,7 @@ const metrics = [
 
 function MyReports() {
   const [query, setQuery] = useState('')
+  const loggedUserId = 'rodrigo-silva'
   const filteredReports = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase()
 
@@ -125,7 +126,9 @@ function MyReports() {
         </section>
 
         <section className="mx-0 flex max-w-4xl flex-col space-y-4 pt-5" aria-label="Meus reports">
-          {filteredReports.map((report) => <ReportCard key={report.id} report={report} />)}
+          {filteredReports.map((report) => (
+            <ReportCard key={report.id} report={report} currentUserId={loggedUserId} />
+          ))}
           {filteredReports.length === 0 && (
             <p className="rounded-2xl border border-zinc-200 bg-white p-8 text-center text-sm text-zinc-500">
               Nenhum report encontrado para essa busca.

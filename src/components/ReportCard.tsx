@@ -7,6 +7,7 @@ import { MdEngineering } from "react-icons/md";
 
 interface ReportCardProps {
   report: Report
+  currentUserId?: string
 }
 
 const statusMessages: Record<string, string> = {
@@ -15,7 +16,7 @@ const statusMessages: Record<string, string> = {
   'Em Homologação': 'Aguardando avaliação do usuário final',
 }
 
-export function ReportCard({ report }: ReportCardProps) {
+export function ReportCard({ report, currentUserId }: ReportCardProps) {
   const [isCommentsOpen, setIsCommentsOpen] = useState(false)
   const [isAuditOpen, setIsAuditOpen] = useState(false)
   const [activePhoto, setActivePhoto] = useState(0)
@@ -28,6 +29,7 @@ export function ReportCard({ report }: ReportCardProps) {
   const hasBeforeAndAfter = photos.length > 1
   const isPendingEvaluation = report.status === 'Em Homologação'
   const isCompleted = report.status === 'Concluído'
+  const isReportOwner = report.autor.id === currentUserId
 
   return (
     <article className="w-full min-w-0 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm reveal-up sm:p-5">
@@ -126,6 +128,11 @@ export function ReportCard({ report }: ReportCardProps) {
               ✦ Avaliado com {report.avaliacao}/5 estrelas
             </p>
           )}
+          {isReportOwner ? (
+            <button type="button" className="rounded-md border border-red-200 px-2 py-1 text-[10px] text-red-700 hover:bg-red-50">
+              Excluir
+            </button>
+          ) : null}
         </div>
       </div>
       <CommentModal
