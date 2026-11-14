@@ -38,5 +38,5 @@ export interface HistoricoReport {
   dsStatusAnterior?: string
   dsStatusNovo: string
   dtMudanca: string
-  dsJustificativa?: string
+  dsJustificativa: string
 }
