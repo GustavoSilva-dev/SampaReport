@@ -3,6 +3,7 @@ import { FaHistory, FaMapMarkerAlt } from 'react-icons/fa'
 import { useState } from 'react'
 import { CommentModal } from './modal/CommentModal'
 import { AuditModal } from './modal/AuditModal'
+import { MdEngineering } from "react-icons/md";
 
 interface ReportCardProps {
   report: Report
@@ -92,14 +93,10 @@ export function ReportCard({ report }: ReportCardProps) {
       <p className="mt-2 text-[12px] leading-4 text-zinc-600">{report.descricao}</p>
       {report.justificativa && (
         <div className="mt-3 rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-2.5">
-          <p className="text-[10px] font-semibold text-emerald-800">Nota da Prefeitura</p>
+          <p className="text-[10px] font-semibold text-emerald-800 gap-1 flex items-center">
+            <MdEngineering /> Nota da Prefeitura</p>
           <p className="mt-1 text-[11px] leading-4 text-emerald-900">{report.justificativa.dsJustificativa}</p>
         </div>
-      )}
-      {isCompleted && report.avaliacao && (
-        <p className="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-[11px] font-medium text-emerald-800">
-          ✦ Avaliado com {report.avaliacao}/5 estrelas
-        </p>
       )}
       <div className="mt-2 rounded-lg bg-emerald-50 px-2.5 py-2">
         <div className="flex flex-wrap items-center justify-between gap-2 text-[10px]">
@@ -116,7 +113,7 @@ export function ReportCard({ report }: ReportCardProps) {
         </p>
       </div>
       <div className="mt-2 flex items-center border-t border-zinc-100 pt-2">
-        <div className="flex flex-wrap gap-2">
+        <div className="flex w-full flex-wrap items-center gap-2">
           {isPendingEvaluation && (
             <button type="button" onClick={() => setIsAuditOpen(true)} className="w-full rounded-md bg-[#12a879] px-3 py-2 text-[11px] font-medium text-white transition-colors hover:bg-emerald-700">
               Avaliar Reparo
@@ -124,6 +121,11 @@ export function ReportCard({ report }: ReportCardProps) {
           )}
           <button type="button" className="rounded-md border border-zinc-200 px-2 py-1 text-[10px] text-zinc-700 hover:bg-zinc-50">♡ Apoiar ({report.quantidadeApoios})</button>
           <button type="button" onClick={() => setIsCommentsOpen(true)} className="rounded-md border border-zinc-200 px-2 py-1 text-[10px] text-zinc-700 hover:bg-zinc-50">▢ Comentários (8)</button>
+          {isCompleted && report.avaliacao && (
+            <p className="rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-medium text-emerald-800">
+              ✦ Avaliado com {report.avaliacao}/5 estrelas
+            </p>
+          )}
         </div>
       </div>
       <CommentModal

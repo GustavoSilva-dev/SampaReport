@@ -106,7 +106,7 @@ function MyReports() {
                 </span>
                 <div>
                   <p className="text-[10px] text-zinc-500">{label}</p>
-                  <p className="text-lg font-semibold leading-5 text-zinc-900">{value(myReports)}</p>
+                  <p className="text-[1.5rem] mt-1 font-semibold leading-5 ratingAnimation">{value(myReports)}</p>
                 </div>
               </article>
             ))}
