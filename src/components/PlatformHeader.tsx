@@ -1,25 +1,30 @@
 import { Link } from 'react-router-dom'
 
-export function PlatformHeader() {
+interface PlatformHeaderProps {
+    active?: 'feed' | 'reports'
+}
+
+export function PlatformHeader({ active = 'feed' }: PlatformHeaderProps) {
     return (
         <header className="border-b sticky top-0 z-1000 border-[#183c36] bg-white">
             <div className="mx-auto flex h-[62px] max-w-[1240px] items-center justify-between px-5 sm:px-8">
-                <Link to="/plataforma/feed" className="leading-none" aria-label="SampaReport Feed">
-                    <a className="text-[22px] font-extrabold tracking-[-1.5px] text-[#183c36]" href="#" aria-label="SampaReport início">
-                        Sampa<span className="text-[#12a879]">Report</span>
-                    </a>
+                <Link to="/plataforma/feed" className="text-[22px] font-extrabold leading-none tracking-[-1.5px] text-[#183c36]" aria-label="SampaReport Feed">
+                    Sampa<span className="text-[#12a879]">Report</span>
                 </Link>
 
                 <nav className="hidden h-full items-center gap-8 sm:flex" aria-label="Navegação da plataforma">
                     <Link
                         to="/plataforma/feed"
-                        className="flex h-full items-center px-3 text-[11px] text-[#12a879]"
+                        className={`flex h-full items-center px-3 text-[11px] transition-colors hover:text-[#12a879] ${active === 'feed' ? 'text-[#12a879]' : 'text-zinc-900'}`}
                     >
                         Feed Comunitário
                     </Link>
-                    <button type="button" className="text-[11px] text-zinc-900 transition-colors hover:text-[#12a879]">
+                    <Link
+                        to="/plataforma/meus-reports"
+                        className={`flex h-full items-center px-3 text-[11px] transition-colors hover:text-[#12a879] ${active === 'reports' ? 'text-[#12a879]' : ' text-zinc-900'}`}
+                    >
                         Meus Reports
-                    </button>
+                    </Link>
                 </nav>
 
                 <div className="flex items-center gap-4">

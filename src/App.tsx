@@ -5,6 +5,7 @@ import Integrantes from './pages/institucional/Integrantes'
 import Sobre from './pages/institucional/Sobre'
 import Contato from './pages/institucional/Contato'
 import FeedPage from './pages/app/FeedPage'
+import MyReports from './pages/app/MyReports'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/faq" element={<Faq />} />
         <Route path="/contato" element={<Contato />} />
         <Route path="/plataforma/feed" element={<FeedPage />} />
+        <Route path="/plataforma/meus-reports" element={<MyReports />} />
       </Routes>
     </Router>
   )

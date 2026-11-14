@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { PlatformHeader } from '../../components/PlatformHeader'
 import { ReportCard } from '../../components/ReportCard'
+import { FaSearch } from 'react-icons/fa'
 import { GeneralRatingCard } from '../../components/GeneralRatingCard'
 import type { Report } from '../../types'
 
@@ -60,11 +61,14 @@ function FeedPage() {
       <main className="mx-auto max-w-[1240px] px-5 pb-10 sm:px-8">
         <section className="border-b z-1000 border-zinc-200 py-4">
           <GeneralRatingCard />
-          <h1 className="text-xl font-medium tracking-[-0.5px]">Feed de Ocorrências</h1>
-          <p className="mt-0.5 text-[11px] text-zinc-600">Acompanhe e apoie os problemas do seu bairro. Com 5 apoios, a prefeitura é acionada.</p>
-          <label className="mt-2 flex h-7 max-w-[358px] items-center gap-2 rounded-md border border-zinc-300 bg-white px-2.5">
-            <SearchIcon />
-            <input value={query} onChange={(event) => setQuery(event.target.value)} className="w-full bg-transparent text-[11px] outline-none placeholder:text-zinc-500" placeholder="Busca" aria-label="Buscar ocorrências" />
+          <h1 className="text-2xl font-semibold tracking-[-0.8px] text-[#183c36]">Feed de Ocorrências</h1>
+          <p className="mt-1 text-xs text-zinc-600">Acompanhe e apoie os problemas do seu bairro. Com 5 apoios, a prefeitura é acionada.</p>
+
+
+          <label className="mt-4 flex h-10 items-center gap-2 rounded-xl border border-zinc-200 bg-white px-3 shadow-sm focus-within:border-emerald-500">
+            <FaSearch aria-hidden="true" className="text-xs text-zinc-400" />
+            <input value={query} onChange={(event) => setQuery(event.target.value)} className="w-full bg-transparent text-xs outline-none placeholder:text-zinc-400"
+              placeholder="Buscar por rua, bairro ou número de protocolo (#SP-2025)..." aria-label="Buscar ocorrências" />
           </label>
         </section>
 
