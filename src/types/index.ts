@@ -19,3 +19,15 @@ export interface Report {
   imagemUrl: string
   autor: Usuario
 }
+
+export interface Comentario {
+  id: number
+  idReport: number
+  conteudo: string
+  dataCriacao: string
+  autor: {
+    id: number
+    nome: string
+    role: string
+  }
+}

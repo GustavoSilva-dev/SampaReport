@@ -1,5 +1,7 @@
 import type { Report } from '../types'
 import { FaMapMarkerAlt } from 'react-icons/fa'
+import { useState } from 'react'
+import { CommentModal } from './modal/CommentModal'
 
 interface ReportCardProps {
   report: Report
@@ -12,6 +14,7 @@ const statusMessages: Record<string, string> = {
 }
 
 export function ReportCard({ report }: ReportCardProps) {
+  const [isCommentsOpen, setIsCommentsOpen] = useState(false)
   const initial = report.autor.nome.substring(0, 1).toUpperCase()
   const approvalProgress = Math.min((report.quantidadeApoios / 5) * 100, 100)
   const reachedApprovalGoal = report.quantidadeApoios >= 5
@@ -25,8 +28,8 @@ export function ReportCard({ report }: ReportCardProps) {
           <p className="text-[11px] font-medium text-zinc-900">{report.autor.nome}</p>
           <p className="flex items-center gap-1 text-[9px] text-zinc-500">
             <span>{report.dataCriacao} · </span>
-            <FaMapMarkerAlt className="h-1.5 animate-ping text-emerald-500" />
             <span className="truncate">{report.endereco}</span>
+                        <FaMapMarkerAlt className="h-1.5 animate-ping text-emerald-500" />
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
@@ -69,9 +72,16 @@ export function ReportCard({ report }: ReportCardProps) {
       <div className="mt-2 flex items-center border-t border-zinc-100 pt-2">
         <div className="flex gap-2">
           <button type="button" className="rounded-md border border-zinc-200 px-2 py-1 text-[10px] text-zinc-700 hover:bg-zinc-50">♡ Apoiar ({report.quantidadeApoios})</button>
-          <button type="button" className="rounded-md border border-zinc-200 px-2 py-1 text-[10px] text-zinc-700 hover:bg-zinc-50">▢ Comentários (8)</button>
+          <button type="button" onClick={() => setIsCommentsOpen(true)} className="rounded-md border border-zinc-200 px-2 py-1 text-[10px] text-zinc-700 hover:bg-zinc-50">▢ Comentários (8)</button>
         </div>
       </div>
+      <CommentModal
+        isOpen={isCommentsOpen}
+        onClose={() => setIsCommentsOpen(false)}
+        reportId={Number(report.id.replace(/\D/g, '')) || 0}
+        reportTitulo={report.titulo}
+        report={report}
+      />
     </article>
   )
 }
