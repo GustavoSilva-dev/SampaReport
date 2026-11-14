@@ -82,6 +82,20 @@ html {
   }
 }
 
+@keyframes ratingAnimation {
+  from {
+    color: #12a879;
+  }
+
+  to {
+    color: black;
+  }
+}
+
+.ratingAnimation {
+  animation: ratingAnimation 1.25s ease-in-out alternate infinite;
+}
+
 .reveal-up {
   animation: reveal-up 1s cubic-bezier(.22, 1, .36, 1) both;
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { createPortal } from 'react-dom'
 import type { Comentario, Report } from '../../types'
+import { FaMapMarkerAlt } from 'react-icons/fa'
 
 interface CommentModalProps {
   isOpen: boolean
@@ -75,7 +76,7 @@ export function CommentModal({ isOpen, onClose, reportId, reportTitulo, report }
       aria-modal="true"
       aria-labelledby="comment-modal-title"
     >
-      <div className="my-auto max-h-[calc(100dvh-1.5rem)] w-full max-w-4xl overflow-y-auto rounded-2xl border border-zinc-100 bg-white shadow-xl sm:max-h-[90vh]">
+      <div className="reveal-up my-auto max-h-[calc(100dvh-1.5rem)] w-full max-w-4xl overflow-y-auto rounded-2xl border border-zinc-100 bg-white shadow-xl sm:max-h-[90vh]">
         <header className="flex items-start justify-between border-b border-zinc-100 px-5 py-4 sm:px-6">
           <div className="min-w-0 pr-4">
             <h2 id="comment-modal-title" className="text-lg font-medium text-zinc-900">Comentários</h2>
@@ -102,8 +103,11 @@ export function CommentModal({ isOpen, onClose, reportId, reportTitulo, report }
                 </div>
                 <h3 className="mt-2 text-sm font-medium leading-5 text-zinc-900">{report.titulo}</h3>
                 <p className="mt-2 text-xs leading-5 text-zinc-600">{report.descricao}</p>
-                <p className="mt-3 text-[11px] text-zinc-500">{report.endereco}</p>
-                
+
+                <div className="mt-3 flex items-center gap-2">
+                  <FaMapMarkerAlt className="mt-[-3px] h-2 w-2.5 shrink-0 text-emerald-500 animate-ping" title="Localização" />
+                  <p className="text-[11px] text-zinc-500">{report.endereco}</p>
+                </div>   
               </div>
             </div>
           </section>
@@ -147,7 +151,7 @@ export function CommentModal({ isOpen, onClose, reportId, reportTitulo, report }
                         <p className="text-sm font-medium text-zinc-900">{comment.autor.nome}</p>
                         <time className="text-[11px] text-zinc-400">{comment.dataCriacao}</time>
                       </div>
-                      <p className="mt-1 text-sm leading-5 text-zinc-600">{comment.conteudo}</p>
+                      <p className="mt-1 text-sm leading-5 text-zinc-600 font-extralight">{comment.conteudo}</p>
                     </div>
                   </article>
                 ))

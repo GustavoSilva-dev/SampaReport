@@ -31,3 +31,12 @@ export interface Comentario {
     role: string
   }
 }
+
+export interface HistoricoReport {
+  idHistory: number
+  idReport: number
+  dsStatusAnterior?: string
+  dsStatusNovo: string
+  dtMudanca: string
+  dsJustificativa?: string
+}

@@ -1,8 +1,8 @@
 import type { Report } from '../types'
-import { FaMapMarkerAlt } from 'react-icons/fa'
-import { FaHistory } from "react-icons/fa";
+import { FaHistory, FaMapMarkerAlt } from 'react-icons/fa'
 import { useState } from 'react'
 import { CommentModal } from './modal/CommentModal'
+import { AuditModal } from './modal/AuditModal'
 
 interface ReportCardProps {
   report: Report
@@ -16,6 +16,8 @@ const statusMessages: Record<string, string> = {
 
 export function ReportCard({ report }: ReportCardProps) {
   const [isCommentsOpen, setIsCommentsOpen] = useState(false)
+  const [isAuditOpen, setIsAuditOpen] = useState(false)
+  const reportId = Number(report.id.replace(/\D/g, '')) || 0
   const initial = report.autor.nome.substring(0, 1).toUpperCase()
   const approvalProgress = Math.min((report.quantidadeApoios / 5) * 100, 100)
   const reachedApprovalGoal = report.quantidadeApoios >= 5
@@ -28,17 +30,17 @@ export function ReportCard({ report }: ReportCardProps) {
         <div className="min-w-0 flex-1 leading-tight">
           <p className="text-[11px] font-medium text-zinc-900">{report.autor.nome}</p>
           <p className="flex min-w-0 items-center gap-1 text-[9px] text-zinc-500">
-            <FaMapMarkerAlt className="h-1.5 w-2.5 shrink-0 text-emerald-500 animate-ping" />
+            <FaMapMarkerAlt className="h-1.5 w-2.5 shrink-0 text-emerald-500 animate-ping" title="Localização" />
             <span className="truncate">{report.dataCriacao} · {report.endereco}</span>
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-1.5 max-[400px]:basis-full max-[400px]:items-end">
           <button
             type="button"
-            disabled
-            className="flex gap-1 items-center rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-medium text-emerald-700 shadow-sm transition-colors hover:border-emerald-300 hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60"
+            onClick={() => setIsAuditOpen(true)}
+            className="flex items-center gap-1 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-medium text-emerald-700 shadow-sm transition-colors hover:border-emerald-300 hover:bg-emerald-100"
           >
-            <FaHistory className="text-emerald-700"/> Ver Histórico de Auditoria
+            <FaHistory className="text-emerald-700" /> Ver Linha do Tempo
           </button>
           <span className={`rounded-full px-2 py-1 text-[9px] animate-pulse ${report.status === 'Aguardando Atendimento' ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-800'}`}>{report.status}</span>
         </div>
@@ -78,9 +80,16 @@ export function ReportCard({ report }: ReportCardProps) {
       <CommentModal
         isOpen={isCommentsOpen}
         onClose={() => setIsCommentsOpen(false)}
-        reportId={Number(report.id.replace(/\D/g, '')) || 0}
+        reportId={reportId}
         reportTitulo={report.titulo}
         report={report}
+      />
+      <AuditModal
+        isOpen={isAuditOpen}
+        onClose={() => setIsAuditOpen(false)}
+        reportId={reportId}
+        codigoProtocolo={`#SP-2026: Código ${reportId.toString()}`}
+        statusAtual={report.status}
       />
     </article>
   )

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { PlatformHeader } from '../../components/PlatformHeader'
 import { ReportCard } from '../../components/ReportCard'
+import { GeneralRatingCard } from '../../components/GeneralRatingCard'
 import type { Report } from '../../types'
 
 const reports: Report[] = [
@@ -58,6 +59,7 @@ function FeedPage() {
       <PlatformHeader />
       <main className="mx-auto max-w-[1240px] px-5 pb-10 sm:px-8">
         <section className="border-b z-1000 border-zinc-200 py-4">
+          <GeneralRatingCard />
           <h1 className="text-xl font-medium tracking-[-0.5px]">Feed de Ocorrências</h1>
           <p className="mt-0.5 text-[11px] text-zinc-600">Acompanhe e apoie os problemas do seu bairro. Com 5 apoios, a prefeitura é acionada.</p>
           <label className="mt-2 flex h-7 max-w-[358px] items-center gap-2 rounded-md border border-zinc-300 bg-white px-2.5">
