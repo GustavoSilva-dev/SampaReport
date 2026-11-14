@@ -1,5 +1,6 @@
 import type { Report } from '../types'
 import { FaMapMarkerAlt } from 'react-icons/fa'
+import { FaHistory } from "react-icons/fa";
 import { useState } from 'react'
 import { CommentModal } from './modal/CommentModal'
 
@@ -21,24 +22,23 @@ export function ReportCard({ report }: ReportCardProps) {
   const statusMessage = statusMessages[report.status]
 
   return (
-    <article className="rounded-xl border border-zinc-200 bg-white p-2.5 shadow-sm reveal-up">
-      <div className="flex items-center gap-2 px-0.5">
+    <article className="w-full min-w-0 rounded-xl border border-zinc-200 bg-white p-2.5 shadow-sm reveal-up">
+      <div className="flex flex-wrap items-center gap-2 px-0.5">
         <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-[11px] font-medium text-emerald-800">{initial}</div>
         <div className="min-w-0 flex-1 leading-tight">
           <p className="text-[11px] font-medium text-zinc-900">{report.autor.nome}</p>
-          <p className="flex items-center gap-1 text-[9px] text-zinc-500">
-            <span>{report.dataCriacao} · </span>
-            <span className="truncate">{report.endereco}</span>
-                        <FaMapMarkerAlt className="h-1.5 animate-ping text-emerald-500" />
+          <p className="flex min-w-0 items-center gap-1 text-[9px] text-zinc-500">
+            <FaMapMarkerAlt className="h-1.5 w-2.5 shrink-0 text-emerald-500 animate-ping" />
+            <span className="truncate">{report.dataCriacao} · {report.endereco}</span>
           </p>
         </div>
-        <div className="flex shrink-0 items-center gap-1.5">
+        <div className="flex shrink-0 items-center gap-1.5 max-[400px]:basis-full max-[400px]:items-end">
           <button
             type="button"
             disabled
-            className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-medium text-emerald-700 shadow-sm transition-colors hover:border-emerald-300 hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex gap-1 items-center rounded-md border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-medium text-emerald-700 shadow-sm transition-colors hover:border-emerald-300 hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Ver Histórico de Auditoria
+            <FaHistory className="text-emerald-700"/> Ver Histórico de Auditoria
           </button>
           <span className={`rounded-full px-2 py-1 text-[9px] animate-pulse ${report.status === 'Aguardando Atendimento' ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-800'}`}>{report.status}</span>
         </div>
@@ -56,7 +56,7 @@ export function ReportCard({ report }: ReportCardProps) {
       </div>
       <p className="mt-2 text-[12px] leading-4 text-zinc-600">{report.descricao}</p>
       <div className="mt-2 rounded-lg bg-emerald-50 px-2.5 py-2">
-        <div className="flex items-center justify-between gap-2 text-[10px]">
+        <div className="flex flex-wrap items-center justify-between gap-2 text-[10px]">
           <span className={`font-medium ${reachedApprovalGoal ? 'text-emerald-800' : 'text-emerald-700'}`}>
             {reachedApprovalGoal ? '✺ Meta Cidadã Concluída' : '↗ Meta de Apoios'}
           </span>
@@ -70,7 +70,7 @@ export function ReportCard({ report }: ReportCardProps) {
         </p>
       </div>
       <div className="mt-2 flex items-center border-t border-zinc-100 pt-2">
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button type="button" className="rounded-md border border-zinc-200 px-2 py-1 text-[10px] text-zinc-700 hover:bg-zinc-50">♡ Apoiar ({report.quantidadeApoios})</button>
           <button type="button" onClick={() => setIsCommentsOpen(true)} className="rounded-md border border-zinc-200 px-2 py-1 text-[10px] text-zinc-700 hover:bg-zinc-50">▢ Comentários (8)</button>
         </div>

@@ -70,12 +70,12 @@ export function CommentModal({ isOpen, onClose, reportId, reportTitulo, report }
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      className="fixed inset-0 z-[1100] flex items-start justify-center overflow-y-auto overscroll-contain bg-black/50 p-3 sm:items-center sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="comment-modal-title"
     >
-      <div className="max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-2xl border border-zinc-100 bg-white shadow-xl">
+      <div className="my-auto max-h-[calc(100dvh-1.5rem)] w-full max-w-4xl overflow-y-auto rounded-2xl border border-zinc-100 bg-white shadow-xl sm:max-h-[90vh]">
         <header className="flex items-start justify-between border-b border-zinc-100 px-5 py-4 sm:px-6">
           <div className="min-w-0 pr-4">
             <h2 id="comment-modal-title" className="text-lg font-medium text-zinc-900">Comentários</h2>
@@ -91,7 +91,7 @@ export function CommentModal({ isOpen, onClose, reportId, reportTitulo, report }
           </button>
         </header>
 
-        <div className="grid max-h-[calc(90vh-76px)] min-h-0 md:grid-cols-[minmax(260px,0.8fr)_minmax(0,1.2fr)]">
+        <div className="grid min-h-0 md:grid-cols-[minmax(260px,0.8fr)_minmax(0,1.2fr)]">
           <section className="border-b border-zinc-100 bg-emerald-50/50 p-5 sm:p-6 md:border-b-0 md:border-r" aria-label="Informações do report">
             <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm">
               <img src={report.imagemUrl} alt="" className="h-40 w-full object-cover" />
