@@ -1,11 +1,16 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { CreateReportModal } from './modal/CreateReportModal'
 
 interface PlatformHeaderProps {
     active?: 'feed' | 'reports'
 }
 
 export function PlatformHeader({ active = 'feed' }: PlatformHeaderProps) {
+    const [isCreateReportOpen, setIsCreateReportOpen] = useState(false)
+
     return (
+        <>
         <header className="border-b sticky top-0 z-1000 border-[#183c36] bg-white">
             <div className="mx-auto flex h-[62px] max-w-[1240px] items-center justify-between px-5 sm:px-8">
                 <Link to="/plataforma/feed" className="text-[22px] font-extrabold leading-none tracking-[-1.5px] text-[#183c36]" aria-label="SampaReport Feed">
@@ -30,6 +35,7 @@ export function PlatformHeader({ active = 'feed' }: PlatformHeaderProps) {
                 <div className="flex items-center gap-4">
                     <button
                         type="button"
+                        onClick={() => setIsCreateReportOpen(true)}
                         className="rounded-md bg-[#12a879] px-3.5 py-2 text-[11px] text-white shadow-sm transition-colors hover:bg-emerald-700"
                     >
                         <span aria-hidden="true" className="mr-1.5 text-sm">+</span>
@@ -47,5 +53,7 @@ export function PlatformHeader({ active = 'feed' }: PlatformHeaderProps) {
                 </div>
             </div>
         </header>
+        <CreateReportModal isOpen={isCreateReportOpen} onClose={() => setIsCreateReportOpen(false)} />
+        </>
     )
 }
