@@ -6,6 +6,7 @@ import Sobre from './pages/institucional/Sobre'
 import Contato from './pages/institucional/Contato'
 import FeedPage from './pages/app/FeedPage'
 import MyReports from './pages/app/MyReports'
+import AdminDashboardPage from './pages/app/AdminDashboardPage'
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/contato" element={<Contato />} />
         <Route path="/plataforma/feed" element={<FeedPage />} />
         <Route path="/plataforma/meus-reports" element={<MyReports />} />
+        <Route path="/admin" element={<AdminDashboardPage />} />
       </Routes>
     </Router>
   )

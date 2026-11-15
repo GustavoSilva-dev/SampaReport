@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { CreateReportModal } from './modal/CreateReportModal'
 
 interface PlatformHeaderProps {
-    active?: 'feed' | 'reports'
+    active?: 'feed' | 'reports' | 'admin'
 }
 
 export function PlatformHeader({ active = 'feed' }: PlatformHeaderProps) {
@@ -29,6 +29,12 @@ export function PlatformHeader({ active = 'feed' }: PlatformHeaderProps) {
                         className={`flex h-full items-center px-3 text-[11px] transition-colors hover:text-[#12a879] ${active === 'reports' ? 'text-[#12a879]' : ' text-zinc-900'}`}
                     >
                         Meus Reports
+                    </Link>
+                    <Link
+                        to="/admin"
+                        className={`flex h-full items-center rounded-md px-3 text-[11px] transition-colors hover:text-[#12a879] ${active === 'admin' ? 'text-[#12a879]' : 'text-zinc-900'}`}
+                    >
+                        Painel Prefeitura
                     </Link>
                 </nav>
 

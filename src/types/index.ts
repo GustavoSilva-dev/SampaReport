@@ -18,6 +18,20 @@ export interface CreateReportDTO {
   imagemUrl: string
 }
 
+export type AdminStatus = 'AGUARDANDO_HOMOLOGACAO' | 'EM_ANDAMENTO' | 'CONCLUIDO'
+
+export interface AdminReport {
+  id: number
+  titulo: string
+  descricao: string
+  endereco: string
+  categoria: string
+  status: AdminStatus
+  quantidadeApoios: number
+  imagemUrl: string
+  autor: string
+}
+
 export interface Usuario {
   id: string
   nome: string
