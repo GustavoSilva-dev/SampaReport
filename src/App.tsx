@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import 'leaflet/dist/leaflet.css';
 import Faq from './pages/institucional/Faq'
 import Home from './pages/institucional/Home'
 import Integrantes from './pages/institucional/Integrantes'

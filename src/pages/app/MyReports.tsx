@@ -4,6 +4,7 @@ import { GeneralRatingCard } from '../../components/GeneralRatingCard'
 import { PlatformHeader } from '../../components/PlatformHeader'
 import { ReportCard } from '../../components/ReportCard'
 import type { Report } from '../../types'
+import MapCard from '../../components/MapCard'
 
 const myReports: Report[] = [
   {
