@@ -1,8 +1,9 @@
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
 
 function MapCard() {
     return (
-        <aside className="moveRight moveRight-delay-1 sticky top-20 rounded-xl border border-zinc-200 bg-white p-2.5 shadow-sm">
+        <aside className="order-first static moveRight moveRight-delay-1 rounded-xl border border-zinc-200 bg-white p-2.5 shadow-sm lg:order-none lg:sticky lg:top-20">
             <h2 className="px-0.5 py-1 text-sm font-medium">Mapa de Ocorrências</h2>
             <div className="mt-1 h-[294px] rounded-lg border border-dashed border-zinc-200 bg-white" aria-label="Área reservada para o mapa de ocorrências">
                 <RenderMap />
@@ -14,8 +15,34 @@ function MapCard() {
     )
 }
 
+
 function RenderMap() {
-    const posicaoPadrao: [number, number] = [-23.55052, -46.633308]; 
+    const customUserMarker = L.divIcon({
+        className: 'custom-user-marker',
+        html: `
+    <div style="
+      background-color: #d0fae5; 
+      width: 36px; 
+      height: 36px; 
+      border-radius: 50%; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      color: oklch(43.2% 0.095 166.913); 
+      font-weight: normal; 
+      font-family: "Momo Trust Display", sans-serif;
+      font-size: 18px;
+      border: 50px solid white; 
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    ">
+      G
+    </div>
+  `,
+        iconSize: [36, 36],
+        iconAnchor: [18, 18], // Centraliza o ponto do marcador na coordenada exata
+        popupAnchor: [0, -18]
+    });
+    const posicaoPadrao: [number, number] = [-23.55052, -46.633308];
 
     return (
         <MapContainer
@@ -28,9 +55,9 @@ function RenderMap() {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <Marker position={posicaoPadrao}>
+            <Marker position={posicaoPadrao} icon={customUserMarker}>
                 <Popup>
-                    Olá! Este é um mapa com React Leaflet.
+                    Ocorrência registrada no bairro
                 </Popup>
             </Marker>
         </MapContainer>
