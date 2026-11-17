@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CreateReportModal } from './modal/CreateReportModal'
 import { FaBars, FaTimes } from 'react-icons/fa'
+import type { UsuarioResponseDTO } from '../services/registerService'
 
 interface PlatformHeaderProps {
     active?: 'feed' | 'reports' | 'admin'
@@ -10,6 +11,9 @@ interface PlatformHeaderProps {
 export function PlatformHeader({ active = 'feed' }: PlatformHeaderProps) {
     const [isCreateReportOpen, setIsCreateReportOpen] = useState(false)
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const loggedUser: UsuarioResponseDTO | null = JSON.parse(localStorage.getItem('logged-user') || 'null')
+    const userName = loggedUser?.nome || 'Visitante'
+    const userInitial = userName.charAt(0).toUpperCase()
 
     return (
         <>
@@ -51,11 +55,11 @@ export function PlatformHeader({ active = 'feed' }: PlatformHeaderProps) {
                     </button>
                     <div className="hidden items-center gap-2 sm:flex">
                         <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-[11px] font-medium text-emerald-800">
-                            R
+                            {userInitial}
                         </div>
                         <div className="leading-tight">
-                            <p className="text-[10px] text-zinc-900">Rodrigo Silva</p>
-                            <p className="text-[9px] text-zinc-500">Cidadão</p>
+                            <p className="text-[10px] text-zinc-900">{userName}</p>
+                            <p className="text-[9px] text-zinc-500">{loggedUser?.perfil == "ROLE_USER" ? "Perfil Cidadão" : "Perfil Admin"}</p>
                         </div>
                     </div>
                     <button

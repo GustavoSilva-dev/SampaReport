@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from "react-router-dom"
+import { handleLogin, handleRegister } from '../services/registerService'
 import prefeituraLogo from '../assets/prefeitura-logo.png'
 
 type AuthMode = 'login' | 'register'
@@ -32,12 +33,14 @@ function AuthSection() {
   const [errors, setErrors] = useState<AuthErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
+  const [apiError, setApiError] = useState('')
   const navigate = useNavigate()
 
   function changeMode(nextMode: AuthMode) {
     setMode(nextMode)
     setErrors({})
     setSuccessMessage('')
+    setApiError('')
   }
 
   function handleChange(field: 'name' | 'email' | 'password' | 'role', value: string) {
@@ -50,6 +53,7 @@ function AuthSection() {
       [field]: undefined,
     }))
     setSuccessMessage('')
+    setApiError('')
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -86,14 +90,29 @@ function AuthSection() {
 
     setIsSubmitting(true)
 
-    await new Promise((resolve) => {
-      window.setTimeout(resolve, 600)
-    })
+    try {
+      if (mode === 'login') {
+        await handleLogin({
+          email: values.email.trim(),
+          senha: values.password,
+        })
+      } else {
+        await handleRegister({
+          nome: values.name.trim(),
+          email: values.email.trim(),
+          senha: values.password,
+          perfil: values.role
+        })
+      }
 
-    localStorage.setItem('sampareport-profile', mode === 'register' ? values.role : 'ROLE_USER')
-    setSuccessMessage(mode === 'login' ? 'Login realizado com sucesso.' : 'Conta criada com sucesso.')
-    navigate("/plataforma/feed");
-    setIsSubmitting(false)
+      setSuccessMessage(mode === 'login' ? 'Login realizado com sucesso.' : 'Conta criada com sucesso.')
+      navigate("/plataforma/feed")
+    } catch (error) {
+      setSuccessMessage('')
+      setApiError(error instanceof Error ? error.message : 'Não foi possível concluir a operação.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -210,6 +229,7 @@ function AuthSection() {
             {isSubmitting ? (mode === 'login' ? 'Entrando...' : 'Criando conta...') : (mode === 'login' ? 'Entrar' : 'Criar Conta')}
           </button>
 
+          {apiError && <p className="text-center text-sm text-red-500" role="alert">{apiError}</p>}
           {successMessage && <p className="text-center text-sm text-emerald-600" role="status">{successMessage}</p>}
           </form>
         </div>
