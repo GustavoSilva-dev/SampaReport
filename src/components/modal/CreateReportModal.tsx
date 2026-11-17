@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState, type ChangeEvent, type DragEvent, type FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import { createPortal } from 'react-dom'
-import { FaCamera, FaMapMarkerAlt, FaTimes } from 'react-icons/fa'
+import { ImageUpload } from '../ImageUpload'
+import { FaMapMarkerAlt, FaTimes } from 'react-icons/fa'
 import type { CategoriaReport, CreateReportDTO } from '../../types'
 
 interface CreateReportModalProps {
@@ -27,18 +28,9 @@ const initialForm = {
 
 export function CreateReportModal({ isOpen, onClose, onSuccess }: CreateReportModalProps) {
   const [form, setForm] = useState(initialForm)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [previewUrl, setPreviewUrl] = useState('')
-  const [isDragging, setIsDragging] = useState(false)
+  const [imageUrl, setImageUrl] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
-  const fileInputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    return () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl)
-    }
-  }, [previewUrl])
 
   if (!isOpen) return null
 
@@ -47,38 +39,13 @@ export function CreateReportModal({ isOpen, onClose, onSuccess }: CreateReportMo
     setError('')
   }
 
-  function selectFile(file: File | undefined) {
-    if (!file) return
-    if (!file.type.startsWith('image/')) {
-      setError('Selecione um arquivo de imagem válido.')
-      return
-    }
-
-    setPreviewUrl((current) => {
-      if (current) URL.revokeObjectURL(current)
-      return URL.createObjectURL(file)
-    })
-    setSelectedFile(file)
+  function handleImageUpload(uploadedImageUrl: string) {
+    setImageUrl(uploadedImageUrl)
     setError('')
   }
 
-  function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
-    selectFile(event.target.files?.[0])
-  }
-
-  function handleDrop(event: DragEvent<HTMLDivElement>) {
-    event.preventDefault()
-    setIsDragging(false)
-    selectFile(event.dataTransfer.files[0])
-  }
-
-  function removeFile() {
-    setPreviewUrl((current) => {
-      if (current) URL.revokeObjectURL(current)
-      return ''
-    })
-    setSelectedFile(null)
-    if (fileInputRef.current) fileInputRef.current.value = ''
+  function removeImage() {
+    setImageUrl('')
   }
 
   function useCurrentLocation() {
@@ -87,7 +54,7 @@ export function CreateReportModal({ isOpen, onClose, onSuccess }: CreateReportMo
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const missingField = !selectedFile
+    const missingField = !imageUrl
       ? 'imagem'
       : !form.titulo.trim()
         ? 'título'
@@ -110,7 +77,7 @@ export function CreateReportModal({ isOpen, onClose, onSuccess }: CreateReportMo
       descricao: form.descricao.trim(),
       categoria: form.categoria as CategoriaReport,
       endereco: form.endereco.trim(),
-      imagemUrl: `https://res.cloudinary.com/sampareport/mock/${encodeURIComponent(selectedFile.name)}`,
+      imagemUrl: imageUrl,
     }
 
     // Futuro POST: fetch('/api/reports', { method: 'POST', body: JSON.stringify(payload) })
@@ -118,7 +85,7 @@ export function CreateReportModal({ isOpen, onClose, onSuccess }: CreateReportMo
     await new Promise((resolve) => setTimeout(resolve, 600))
     setIsSubmitting(false)
     setForm(initialForm)
-    removeFile()
+    removeImage()
     onSuccess?.()
     onClose()
   }
@@ -142,30 +109,7 @@ export function CreateReportModal({ isOpen, onClose, onSuccess }: CreateReportMo
         </header>
 
         <form onSubmit={handleSubmit} className="space-y-4 p-5 sm:p-6">
-          <div
-            onClick={() => fileInputRef.current?.click()}
-            onDragOver={(event) => { event.preventDefault(); setIsDragging(true) }}
-            onDragLeave={() => setIsDragging(false)}
-            onDrop={handleDrop}
-            className={`relative cursor-pointer overflow-hidden rounded-xl border-2 border-dashed p-5 text-center transition-colors ${isDragging ? 'border-emerald-500 bg-emerald-50' : 'border-emerald-300 bg-emerald-50/30 hover:border-emerald-500'}`}
-          >
-            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="sr-only" />
-            {previewUrl ? (
-              <>
-                <img src={previewUrl} alt="Pré-visualização da ocorrência" className="h-40 w-full rounded-lg object-cover" />
-                <button type="button" onClick={(event) => { event.stopPropagation(); removeFile() }} className="absolute right-3 top-3 rounded-full bg-white/90 p-2 text-zinc-600 shadow hover:text-red-600" aria-label="Remover imagem">
-                  <FaTimes aria-hidden="true" />
-                </button>
-                <p className="mt-2 text-xs text-emerald-700">Clique ou arraste para trocar a foto</p>
-              </>
-            ) : (
-              <>
-                <FaCamera className="mx-auto text-2xl text-emerald-600" aria-hidden="true" />
-                <p className="mt-2 text-sm font-medium text-zinc-700">Adicione uma foto do problema</p>
-                <p className="mt-1 text-xs text-zinc-500">Arraste uma imagem ou clique para selecionar</p>
-              </>
-            )}
-          </div>
+          <ImageUpload onUpload={handleImageUpload} onRemove={removeImage} />
 
           <div>
             <label htmlFor="report-title" className="mb-1.5 block text-xs font-medium text-zinc-700">Título da ocorrência</label>
