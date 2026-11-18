@@ -161,7 +161,6 @@ export function ReportCard({ report, currentUserId, hasUpvoted = false, isUpvoti
         isOpen={isAuditOpen}
         onClose={() => setIsAuditOpen(false)}
         reportId={reportId}
-        codigoProtocolo={`#SP-2026: Código ${reportId.toString()}`}
         statusAtual={report.status}
       />
     </article>
