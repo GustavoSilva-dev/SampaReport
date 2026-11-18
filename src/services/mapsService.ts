@@ -112,3 +112,29 @@ export async function getAddressFromCoordinates(lat: number, lon: number): Promi
 
   return [street, neighborhood, city].filter(Boolean).join(', ') || result.display_name
 }
+
+export async function getCityFromCoordinates(lat: number, lon: number): Promise<string> {
+  const params = new URLSearchParams({
+    lat: String(lat),
+    lon: String(lon),
+    format: 'json',
+    addressdetails: '1',
+  })
+  const response = await fetch(`https://nominatim.openstreetmap.org/reverse?${params}`, {
+    headers: NOMINATIM_HEADERS,
+  })
+
+  if (!response.ok) {
+    throw new Error('Não foi possível obter a cidade da localização.')
+  }
+
+  const result = await response.json() as NominatimResult
+  console.log(result);
+  const city = result.address?.road + (result.address?.suburb ? ", " + result.address?.suburb : '')
+    || result.address?.town
+    || result.address?.municipality
+    || result.address?.suburb
+    || result.address?.neighbourhood
+
+  return city || 'São Paulo'
+}

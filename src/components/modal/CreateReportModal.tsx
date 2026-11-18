@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { ImageUpload } from '../ImageUpload'
 import { FaMapMarkerAlt, FaTimes } from 'react-icons/fa'
 import type { ReportRequestDTO, ReportType } from '../../types'
-import { createReport } from '../../services/createReportService'
+import { createReport } from '../../services/reportService'
 import {
   getAddressFromCoordinates,
   getCoordinatesFromAddress,

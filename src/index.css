@@ -34,6 +34,39 @@ html {
   }
 }
 
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+}
+
+.avatar-pulse-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-pulse-ring {
+  position: absolute;
+  z-index: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #3fc299; /* Cor verde esmeralda do projeto */
+  opacity: 0.4;
+  animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
 @keyframes moveRight {
   from {
     opacity: 0;

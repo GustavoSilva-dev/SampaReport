@@ -1,13 +1,5 @@
 export type UserRole = 'ROLE_USER' | 'ROLE_ADMIN'
 
-export type CategoriaReport =
-  | 'ASFALTO'
-  | 'ILUMINACAO'
-  | 'LIXO_ENTULHO'
-  | 'DRENAGEM_ALAGAMENTO'
-  | 'SINALIZACAO'
-  | 'OUTROS'
-
 export type ReportType =
   | 'ASFALTO_BURACOS'
   | 'ILUMINACAO_PUBLICA'
@@ -26,14 +18,26 @@ export interface ReportRequestDTO {
   usuarioId: number
 }
 
-export interface CreateReportDTO {
+export type ReportStatus =
+  | 'PENDENTE_COMUNIDADE'
+  | 'APROVADO_COMUNIDADE'
+  | 'EM_ANDAMENTO'
+  | 'EM_HOMOLOGACAO'
+  | 'CONCLUIDO'
+  | 'CANCELADO'
+
+export interface ReportResponseDTO {
+  id: number
   titulo: string
   descricao: string
-  categoria: CategoriaReport
-  endereco: string
-  latitude?: number
-  longitude?: number
-  imagemUrl: string
+  categoria: ReportType | string
+  latitude: number
+  longitude: number
+  fotoAntesUrl: string
+  status: ReportStatus
+  quantidadeUpvotes: number
+  dataCriacao: string
+  usuarioId: number
 }
 
 export type AdminStatus = 'AGUARDANDO_HOMOLOGACAO' | 'EM_ANDAMENTO' | 'CONCLUIDO'
@@ -68,6 +72,11 @@ export interface Report {
   quantidadeApoios: number
   imagemUrl: string
   autor: Usuario
+  justificativa?: {
+    dsImagemDepoisUrl?: string
+    dsJustificativa: string
+  }
+  avaliacao?: number
 }
 
 export interface Comentario {

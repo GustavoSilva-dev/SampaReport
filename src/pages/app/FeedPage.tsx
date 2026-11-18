@@ -1,60 +1,136 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { PlatformHeader } from '../../components/PlatformHeader'
 import { ReportCard } from '../../components/ReportCard'
 import { FaSearch } from 'react-icons/fa'
 import { GeneralRatingCard } from '../../components/GeneralRatingCard'
-import type { Report } from '../../types'
+import type { Report, ReportResponseDTO } from '../../types'
 import MapCard from '../../components/MapCard'
+import { getCachedReports, getReports } from '../../services/reportService'
+import { getCachedUsers, getUsers, type UsuarioResponseDTO } from '../../services/userService'
+import { getCityFromCoordinates } from '../../services/mapsService'
 
-const reports: Report[] = [
-  {
-    id: 'report-1',
-    titulo: 'Buraco profundo na faixa de ônibus atrapalhando o tráfego',
-    descricao: 'Cratera com cerca de 50cm de diâmetro na faixa exclusiva de ônibus em frente do Metrô Faria Lima. Alto risco de acidentes para motociclistas e retenção das linhas intermunicipais.',
-    categoria: 'Asfalto / Buracos',
-    endereco: 'Av. Brigadeiro Faria Lima, Pinheiros',
-    dataCriacao: 'há 2 horas',
-    status: 'Aguardando Aprovação',
-    quantidadeApoios: 4,
-    imagemUrl: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=900&q=80',
-    autor: { id: 'user-1', nome: 'Mariana Costa', email: 'mariana@example.com', role: 'ROLE_USER' },
-  },
-  {
-    id: 'report-2',
-    titulo: 'Ponto viciado de descarte de entulho e móveis velhos na calçada',
-    descricao: 'Descarte irregular ocupando a passagem de pedestres e dificultando o acesso de moradores à calçada.',
-    categoria: 'Lixo / Entulho',
-    endereco: 'Rua dos Pinheiros, Bela Vista',
-    dataCriacao: 'Ontem',
-    status: 'Aguardando Atendimento',
-    quantidadeApoios: 8,
-    imagemUrl: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=900&q=80',
-    autor: { id: 'user-2', nome: 'Carlos Mendes', email: 'carlos@example.com', role: 'ROLE_USER' },
-  },
-  {
-    id: 'report-3',
-    titulo: 'Iluminação pública apagada há três dias',
-    descricao: 'Dois postes sem iluminação deixam o trecho escuro durante a noite e aumentam a sensação de insegurança.',
-    categoria: 'Iluminação',
-    endereco: 'Rua Haddock Lobo, Jardins',
-    dataCriacao: 'há 1 dia',
-    status: 'Em Andamento',
-    quantidadeApoios: 5,
-    imagemUrl: 'https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=900&q=80',
-    autor: { id: 'user-3', nome: 'Ana Souza', email: 'ana@example.com', role: 'ROLE_USER' },
-  },
-]
+const categoryLabels: Record<string, string> = {
+  ASFALTO_BURACOS: 'Asfalto / Buracos',
+  ILUMINACAO_PUBLICA: 'Iluminação Pública',
+  SINALIZACAO_TRANSITO: 'Sinalização de Trânsito',
+  LIXO_ENTULHO: 'Lixo / Entulho',
+  ESGOTO_ALAGAMENTO: 'Esgoto / Alagamento',
+  MOBILIDADE_CALCADAS: 'Mobilidade / Calçadas',
+}
 
-function SearchIcon() {
-  return <span aria-hidden="true" className="text-sm text-zinc-400">⌕</span>
+const statusLabels: Record<string, string> = {
+  PENDENTE_COMUNIDADE: 'Aguardando Aprovação',
+  APROVADO_COMUNIDADE: 'Aguardando Atendimento',
+  EM_ANDAMENTO: 'Em Andamento',
+  EM_HOMOLOGACAO: 'Em Homologação',
+  CONCLUIDO: 'Concluído',
+  CANCELADO: 'Cancelado',
+}
+
+function formatDate(value: string) {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return value
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(date)
+}
+
+function mapResponseToReportSync(item: ReportResponseDTO, users: UsuarioResponseDTO[]): Report {
+  const author = users.find((user) => user.id === item.usuarioId)
+
+  return {
+    id: String(item.id),
+    titulo: item.titulo,
+    descricao: item.descricao,
+    categoria: categoryLabels[item.categoria] || item.categoria,
+    endereco: 'Carregando endereço...',
+    dataCriacao: formatDate(item.dataCriacao),
+    status: statusLabels[item.status] || item.status,
+    quantidadeApoios: item.quantidadeUpvotes,
+    imagemUrl: item.fotoAntesUrl,
+    autor: {
+      id: String(author?.id ?? item.usuarioId),
+      nome: author?.nome || 'Cidadão',
+      email: author?.email || '',
+      role: author?.perfil === 'ROLE_ADMIN' ? 'ROLE_ADMIN' : 'ROLE_USER',
+    },
+  }
+}
+
+async function mapResponseToReport(item: ReportResponseDTO, users: UsuarioResponseDTO[]): Promise<Report> {
+  const report = mapResponseToReportSync(item, users)
+
+  try {
+    report.endereco = await getCityFromCoordinates(item.latitude, item.longitude)
+  } catch {
+    report.endereco = ''
+  }
+
+  return report
 }
 
 function FeedPage() {
   const [query, setQuery] = useState('')
   const [feedVersion, setFeedVersion] = useState(0)
+  const [reports, setReports] = useState<Report[]>(() =>
+    getCachedReports().map((item) => mapResponseToReportSync(item, getCachedUsers())),
+  )
+  const [apiReports, setApiReports] = useState<ReportResponseDTO[]>(() => getCachedReports())
+  const [apiUsers, setApiUsers] = useState<UsuarioResponseDTO[]>(() => getCachedUsers())
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    let isActive = true
+
+    async function loadReports() {
+      setIsLoading(true)
+      setError('')
+      try {
+        const [reportsResult, usersResult] = await Promise.allSettled([
+          getReports(),
+          getUsers(),
+        ])
+        const response = reportsResult.status === 'fulfilled'
+          ? reportsResult.value
+          : getCachedReports()
+        const users = usersResult.status === 'fulfilled'
+          ? usersResult.value
+          : getCachedUsers()
+
+        if (isActive) {
+          if (reportsResult.status === 'rejected') {
+            setError(reportsResult.reason instanceof Error
+              ? reportsResult.reason.message
+              : 'Não foi possível carregar as ocorrências.')
+          }
+          setApiReports(response)
+          setApiUsers(users)
+          const mappedReports = await Promise.all(
+            response.map((item) => mapResponseToReport(item, users)),
+          )
+          setReports(mappedReports)
+        }
+      } catch (loadError) {
+        if (isActive) {
+          setError(loadError instanceof Error ? loadError.message : 'Não foi possível carregar as ocorrências.')
+        }
+      } finally {
+        if (isActive) setIsLoading(false)
+      }
+    }
+
+    void loadReports()
+    return () => {
+      isActive = false
+    }
+  }, [feedVersion])
+
   const filteredReports = useMemo(
     () => reports.filter((report) => `${report.titulo} ${report.categoria} ${report.endereco}`.toLowerCase().includes(query.toLowerCase())),
-    [query],
+    [query, reports],
   )
 
   return (
@@ -76,10 +152,12 @@ function FeedPage() {
 
         <div className="grid items-start gap-3 pt-3 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.8fr)]">
           <section key={feedVersion} className="space-y-2" aria-label="Lista de ocorrências">
+            {isLoading && reports.length === 0 && <p className="rounded-xl border border-zinc-200 bg-white p-6 text-sm text-zinc-500">Carregando ocorrências...</p>}
+            {error && <p className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700" role="alert">{error}</p>}
             {filteredReports.map((report) => <ReportCard key={report.id} report={report} />)}
-            {filteredReports.length === 0 && <p className="rounded-xl border border-zinc-200 bg-white p-6 text-sm text-zinc-500">Nenhuma ocorrência encontrada.</p>}
+            {!isLoading && filteredReports.length === 0 && <p className="rounded-xl border border-zinc-200 bg-white p-6 text-sm text-zinc-500">Nenhuma ocorrência encontrada.</p>}
           </section>
-          <MapCard />
+          <MapCard reports={apiReports} users={apiUsers} />
         </div>
       </main>
     </div>
