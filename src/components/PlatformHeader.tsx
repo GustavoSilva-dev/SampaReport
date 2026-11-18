@@ -6,9 +6,10 @@ import type { UsuarioResponseDTO } from '../services/registerService'
 
 interface PlatformHeaderProps {
     active?: 'feed' | 'reports' | 'admin'
+    onReportCreated?: () => void
 }
 
-export function PlatformHeader({ active = 'feed' }: PlatformHeaderProps) {
+export function PlatformHeader({ active = 'feed', onReportCreated }: PlatformHeaderProps) {
     const [isCreateReportOpen, setIsCreateReportOpen] = useState(false)
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const loggedUser: UsuarioResponseDTO | null = JSON.parse(localStorage.getItem('logged-user') || 'null')
@@ -88,7 +89,7 @@ export function PlatformHeader({ active = 'feed' }: PlatformHeaderProps) {
                 </nav>
             )}
         </header>
-        <CreateReportModal isOpen={isCreateReportOpen} onClose={() => setIsCreateReportOpen(false)} />
+        <CreateReportModal isOpen={isCreateReportOpen} onClose={() => setIsCreateReportOpen(false)} onSuccess={onReportCreated} />
         </>
     )
 }

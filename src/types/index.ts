@@ -8,6 +8,24 @@ export type CategoriaReport =
   | 'SINALIZACAO'
   | 'OUTROS'
 
+export type ReportType =
+  | 'ASFALTO_BURACOS'
+  | 'ILUMINACAO_PUBLICA'
+  | 'SINALIZACAO_TRANSITO'
+  | 'LIXO_ENTULHO'
+  | 'ESGOTO_ALAGAMENTO'
+  | 'MOBILIDADE_CALCADAS'
+
+export interface ReportRequestDTO {
+  titulo: string
+  descricao: string
+  categoria: ReportType
+  latitude: number
+  longitude: number
+  fotoAntesUrl: string
+  usuarioId: number
+}
+
 export interface CreateReportDTO {
   titulo: string
   descricao: string

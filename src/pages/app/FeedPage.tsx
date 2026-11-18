@@ -51,6 +51,7 @@ function SearchIcon() {
 
 function FeedPage() {
   const [query, setQuery] = useState('')
+  const [feedVersion, setFeedVersion] = useState(0)
   const filteredReports = useMemo(
     () => reports.filter((report) => `${report.titulo} ${report.categoria} ${report.endereco}`.toLowerCase().includes(query.toLowerCase())),
     [query],
@@ -58,7 +59,7 @@ function FeedPage() {
 
   return (
     <div className="min-h-screen platform-bg text-zinc-900">
-      <PlatformHeader />
+      <PlatformHeader onReportCreated={() => setFeedVersion((version) => version + 1)} />
       <main className="mx-auto max-w-[1240px] px-5 pb-10 sm:px-8">
         <section className="border-b z-1000 border-zinc-200 py-4">
           <GeneralRatingCard />
@@ -74,7 +75,7 @@ function FeedPage() {
         </section>
 
         <div className="grid items-start gap-3 pt-3 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.8fr)]">
-          <section className="space-y-2" aria-label="Lista de ocorrências">
+          <section key={feedVersion} className="space-y-2" aria-label="Lista de ocorrências">
             {filteredReports.map((report) => <ReportCard key={report.id} report={report} />)}
             {filteredReports.length === 0 && <p className="rounded-xl border border-zinc-200 bg-white p-6 text-sm text-zinc-500">Nenhuma ocorrência encontrada.</p>}
           </section>
