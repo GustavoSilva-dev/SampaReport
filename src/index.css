@@ -49,6 +49,25 @@ html {
   }
 }
 
+@keyframes upvoteAnimate {
+  0% {
+    transform: scale(1);
+    color: #12a879;
+  }
+  50% {
+    transform: scale(1.1);
+    color: #12a879;
+  }
+  100% {
+    transform: scale(1);
+    color: #3f3f46;
+  }
+}
+
+.upvoteAnimate {
+  animation: upvoteAnimate 0.5s ease-in-out;
+}
+
 .avatar-pulse-container {
   position: relative;
   display: flex;

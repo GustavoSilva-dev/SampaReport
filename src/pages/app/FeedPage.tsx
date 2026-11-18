@@ -8,6 +8,12 @@ import MapCard from '../../components/MapCard'
 import { getCachedReports, getReports } from '../../services/reportService'
 import { getCachedUsers, getUsers, type UsuarioResponseDTO } from '../../services/userService'
 import { getCityFromCoordinates } from '../../services/mapsService'
+import {
+  darUpvote,
+  getCachedUpvoteEntries,
+  getUserUpvotes,
+  type UserUpvoteCacheEntry,
+} from '../../services/upvoteService'
 
 const categoryLabels: Record<string, string> = {
   ASFALTO_BURACOS: 'Asfalto / Buracos',
@@ -79,8 +85,34 @@ function FeedPage() {
   )
   const [apiReports, setApiReports] = useState<ReportResponseDTO[]>(() => getCachedReports())
   const [apiUsers, setApiUsers] = useState<UsuarioResponseDTO[]>(() => getCachedUsers())
+  const [userUpvotes, setUserUpvotes] = useState<number[]>(() => {
+    const loggedUser = JSON.parse(localStorage.getItem('logged-user') || '{}') as { id?: number }
+    if (!loggedUser.id) return []
+    return getCachedUpvoteEntries()
+      .filter((entry) => entry.usuarioId === loggedUser.id)
+      .map((entry) => entry.reportId)
+  })
+  const [upvotingReportId, setUpvotingReportId] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    const loggedUser = JSON.parse(localStorage.getItem('logged-user') || '{}') as { id?: number }
+    if (!loggedUser.id) return
+
+    let isActive = true
+    void getUserUpvotes(loggedUser.id)
+      .then((ids) => {
+        if (isActive) setUserUpvotes(ids)
+      })
+      .catch(() => {
+        // Keep the cached upvotes if the synchronization request fails.
+      })
+
+    return () => {
+      isActive = false
+    }
+  }, [])
 
   useEffect(() => {
     let isActive = true
@@ -133,6 +165,54 @@ function FeedPage() {
     [query, reports],
   )
 
+  async function handleUpvote(reportId: number) {
+    const loggedUser = JSON.parse(localStorage.getItem('logged-user') || '{}') as { id?: number }
+    if (!loggedUser.id) {
+      setError('Faça login para apoiar uma ocorrência.')
+      return
+    }
+    if (userUpvotes.includes(reportId) || upvotingReportId !== null) return
+
+    setUpvotingReportId(reportId)
+    setError('')
+
+    try {
+      await darUpvote(reportId, loggedUser.id)
+
+      const nextUserUpvotes = [...userUpvotes, reportId]
+      setUserUpvotes(nextUserUpvotes)
+
+      const entries = getCachedUpvoteEntries()
+      const nextEntries: UserUpvoteCacheEntry[] = [
+        ...entries,
+        { reportId, usuarioId: loggedUser.id },
+      ]
+      localStorage.setItem('user-upvotes', JSON.stringify(nextEntries))
+
+      setApiReports((current) => {
+        const updated = current.map((report) =>
+          report.id === reportId
+            ? { ...report, quantidadeUpvotes: report.quantidadeUpvotes + 1 }
+            : report,
+        )
+        localStorage.setItem('reports-list', JSON.stringify(updated))
+        return updated
+      })
+
+      setReports((current) =>
+        current.map((report) =>
+          report.id === String(reportId)
+            ? { ...report, quantidadeApoios: report.quantidadeApoios + 1 }
+            : report,
+        ),
+      )
+    } catch (upvoteError) {
+      setError(upvoteError instanceof Error ? upvoteError.message : 'Não foi possível registrar o apoio.')
+    } finally {
+      setUpvotingReportId(null)
+    }
+  }
+
   return (
     <div className="min-h-screen platform-bg text-zinc-900">
       <PlatformHeader onReportCreated={() => setFeedVersion((version) => version + 1)} />
@@ -154,7 +234,15 @@ function FeedPage() {
           <section key={feedVersion} className="space-y-2" aria-label="Lista de ocorrências">
             {isLoading && reports.length === 0 && <p className="rounded-xl border border-zinc-200 bg-white p-6 text-sm text-zinc-500">Carregando ocorrências...</p>}
             {error && <p className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700" role="alert">{error}</p>}
-            {filteredReports.map((report) => <ReportCard key={report.id} report={report} />)}
+            {filteredReports.map((report) => (
+              <ReportCard
+                key={report.id}
+                report={report}
+                hasUpvoted={userUpvotes.includes(Number(report.id))}
+                isUpvoting={upvotingReportId === Number(report.id)}
+                onUpvote={handleUpvote}
+              />
+            ))}
             {!isLoading && filteredReports.length === 0 && <p className="rounded-xl border border-zinc-200 bg-white p-6 text-sm text-zinc-500">Nenhuma ocorrência encontrada.</p>}
           </section>
           <MapCard reports={apiReports} users={apiUsers} />

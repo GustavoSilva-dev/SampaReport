@@ -8,6 +8,9 @@ import { MdEngineering } from "react-icons/md";
 interface ReportCardProps {
   report: Report
   currentUserId?: string
+  hasUpvoted?: boolean
+  isUpvoting?: boolean
+  onUpvote?: (reportId: number) => void
 }
 
 const statusMessages: Record<string, string> = {
@@ -16,7 +19,7 @@ const statusMessages: Record<string, string> = {
   'Em Homologação': 'Aguardando avaliação do usuário final',
 }
 
-export function ReportCard({ report, currentUserId }: ReportCardProps) {
+export function ReportCard({ report, currentUserId, hasUpvoted = false, isUpvoting = false, onUpvote }: ReportCardProps) {
   const [isCommentsOpen, setIsCommentsOpen] = useState(false)
   const [isAuditOpen, setIsAuditOpen] = useState(false)
   const [activePhoto, setActivePhoto] = useState(0)
@@ -121,7 +124,18 @@ export function ReportCard({ report, currentUserId }: ReportCardProps) {
               Avaliar Reparo
             </button>
           )}
-          <button type="button" className="rounded-md border border-zinc-200 px-2 py-1 text-[10px] text-zinc-700 hover:bg-zinc-50">♡ Apoiar ({report.quantidadeApoios})</button>
+          <button
+            type="button"
+            disabled={hasUpvoted || isUpvoting}
+            onClick={() => onUpvote?.(reportId)}
+            className={`rounded-md px-2 py-1 text-[10px] transition-colors ${
+              hasUpvoted
+                ? 'upvoteAnimate cursor-not-allowed border border-[#12a879] bg-[#e6f7f2] text-[#183c36]'
+                : 'border border-zinc-200 text-zinc-700 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-60'
+            }`}
+          >
+            {hasUpvoted ? '❤ Apoiado' : `♡ Apoiar (${report.quantidadeApoios})`}
+          </button>
           <button type="button" onClick={() => setIsCommentsOpen(true)} className="rounded-md border border-zinc-200 px-2 py-1 text-[10px] text-zinc-700 hover:bg-zinc-50">▢ Comentários (8)</button>
           {isCompleted && report.avaliacao && (
             <p className="rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-medium text-emerald-800">

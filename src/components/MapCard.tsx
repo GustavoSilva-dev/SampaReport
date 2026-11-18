@@ -12,7 +12,7 @@ function MapCard({ reports = [], users = [] }: MapCardProps) {
     return (
         <aside className="order-first static moveRight moveRight-delay-1 rounded-xl border border-zinc-200 bg-white p-2.5 shadow-sm lg:order-none lg:sticky lg:top-20">
             <h2 className="px-0.5 py-1 text-sm font-medium">Mapa de Ocorrências</h2>
-            <div className="mt-1 h-[294px] rounded-lg border border-dashed border-zinc-200 bg-white" aria-label="Área reservada para o mapa de ocorrências">
+            <div className="mt-1 h-[375px] rounded-lg border border-dashed border-zinc-200 bg-white" aria-label="Área reservada para o mapa de ocorrências">
                 <RenderMap reports={reports} users={users} />
             </div>
             <div className="mt-2 rounded-lg border border-zinc-200 bg-gradient-to-r from-emerald-500 to-emerald-700 px-3 py-2.5 text-[11px] leading-4 text-white">

@@ -1,7 +1,7 @@
 import { apiRequest, jsonRequest } from './apiService'
 import type { ReportRequestDTO, ReportResponseDTO } from '../types'
 
-const REPORTS_CACHE_KEY = 'reports'
+const REPORTS_CACHE_KEY = 'reports-list'
 
 export async function createReport(reportData: ReportRequestDTO): Promise<unknown> {
   const response = await jsonRequest('POST', '/api/reports', reportData)
