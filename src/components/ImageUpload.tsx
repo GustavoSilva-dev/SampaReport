@@ -5,10 +5,11 @@ import { uploadImageToCloudinary } from '../services/cloudinaryUploadService'
 interface ImageUploadProps {
     onUpload?: (imageUrl: string) => void
     onRemove?: () => void
+    initialImageUrl?: string
 }
 
-export function ImageUpload({ onUpload, onRemove }: ImageUploadProps) {
-    const [imageUrl, setImageUrl] = useState('')
+export function ImageUpload({ onUpload, onRemove, initialImageUrl = '' }: ImageUploadProps) {
+    const [imageUrl, setImageUrl] = useState(initialImageUrl)
     const [isDragging, setIsDragging] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState('')

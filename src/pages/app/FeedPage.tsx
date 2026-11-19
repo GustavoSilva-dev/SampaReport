@@ -14,6 +14,7 @@ import {
   getUserUpvotes,
   type UserUpvoteCacheEntry,
 } from '../../services/upvoteService'
+import { getGrades } from '../../services/gradeService'
 
 const categoryLabels: Record<string, string> = {
   ASFALTO_BURACOS: 'Asfalto / Buracos',
@@ -95,6 +96,7 @@ function FeedPage() {
   const [upvotingReportId, setUpvotingReportId] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+  const loggedUser = JSON.parse(localStorage.getItem('logged-user') || '{}') as { id?: number }
 
   useEffect(() => {
     const loggedUser = JSON.parse(localStorage.getItem('logged-user') || '{}') as { id?: number }
@@ -124,6 +126,7 @@ function FeedPage() {
         const [reportsResult, usersResult] = await Promise.allSettled([
           getReports(),
           getUsers(),
+          getGrades(),
         ])
         const response = reportsResult.status === 'fulfilled'
           ? reportsResult.value
@@ -171,6 +174,7 @@ function FeedPage() {
       setError('Faça login para apoiar uma ocorrência.')
       return
     }
+
     if (userUpvotes.includes(reportId) || upvotingReportId !== null) return
 
     setUpvotingReportId(reportId)
@@ -213,6 +217,22 @@ function FeedPage() {
     }
   }
 
+  async function handleGradeApplied() {
+    setFeedVersion((version) => version + 1)
+
+    try {
+      const refreshedReports = await getReports()
+      setApiReports(refreshedReports)
+      const users = getCachedUsers()
+      const mappedReports = await Promise.all(
+        refreshedReports.map((item) => mapResponseToReport(item, users)),
+      )
+      setReports(mappedReports)
+    } catch {
+      // The card and caches already reflect the submitted grade.
+    }
+  }
+
   return (
     <div className="min-h-screen platform-bg text-zinc-900">
       <PlatformHeader onReportCreated={() => setFeedVersion((version) => version + 1)} />
@@ -238,9 +258,11 @@ function FeedPage() {
               <ReportCard
                 key={report.id}
                 report={report}
+                currentUserId={loggedUser.id ? String(loggedUser.id) : undefined}
                 hasUpvoted={userUpvotes.includes(Number(report.id))}
                 isUpvoting={upvotingReportId === Number(report.id)}
                 onUpvote={handleUpvote}
+                onGradeApplied={handleGradeApplied}
               />
             ))}
             {!isLoading && filteredReports.length === 0 && <p className="rounded-xl border border-zinc-200 bg-white p-6 text-sm text-zinc-500">Nenhuma ocorrência encontrada.</p>}

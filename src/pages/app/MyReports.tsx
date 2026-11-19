@@ -158,11 +158,35 @@ function MyReports() {
   }, [loggedUser.id, loggedUser.nome])
 
   async function handleRefresh() {
-    if (!loggedUser.id || isLoading) return
+    if (!loggedUser.id) return
 
     setIsLoading(true)
     setError('')
 
+    try {
+      const response = await getUserReports(loggedUser.id)
+      const mappedReports = await Promise.all(
+        response.map((item) =>
+          mapResponseToReportWithAddress(
+            item,
+            loggedUser.nome || 'Cidadão',
+            loggedUser.id as number,
+          ),
+        ),
+      )
+      setMyReports(mappedReports)
+    } catch (refreshError) {
+      setError(refreshError instanceof Error ? refreshError.message : 'Não foi possível atualizar seus reports.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  async function handleGradeApplied() {
+    if (!loggedUser.id) return
+
+    setIsLoading(true)
+    setError('')
     try {
       const response = await getUserReports(loggedUser.id)
       const mappedReports = await Promise.all(
@@ -323,6 +347,7 @@ function MyReports() {
               hasUpvoted={userUpvotes.includes(Number(report.id))}
               isUpvoting={upvotingReportId === Number(report.id)}
               onUpvote={handleUpvote}
+              onGradeApplied={handleGradeApplied}
             />
           ))}
           {!isLoading && filteredReports.length === 0 && loggedUser.id && (

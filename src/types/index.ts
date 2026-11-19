@@ -134,3 +134,18 @@ export interface GeneralRatingResponse {
   generalRating: number
   totalReviews: number
 }
+
+export interface AvaliacaoRequestDTO {
+  nota: number
+  usuarioId: number
+  feedback?: string | null
+}
+
+export interface Avaliacao {
+  id: number
+  nota: number
+  feedback?: string | null
+  dataAvaliacao: string
+  usuarioId: number
+  reportId: number
+}

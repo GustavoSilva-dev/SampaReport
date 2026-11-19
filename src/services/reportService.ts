@@ -42,6 +42,42 @@ export async function getUserReports(usuarioId: number): Promise<ReportResponseD
   }
 }
 
+export async function updateReport(reportId: number, reportData: ReportRequestDTO): Promise<ReportResponseDTO> {
+  const response = await jsonRequest('PUT', `/api/reports/${reportId}`, reportData)
+  const updated = await parseResponse<ReportResponseDTO>(response)
+
+  const globalCache = getCachedReports().map((report) =>
+    report.id === reportId ? { ...report, ...updated, id: reportId } : report,
+  )
+  localStorage.setItem(REPORTS_CACHE_KEY, JSON.stringify(globalCache))
+
+  const loggedUser = JSON.parse(localStorage.getItem('logged-user') || '{}') as { id?: number }
+  if (loggedUser.id) {
+    const userCache = getCachedUserReports().map((report) =>
+      report.id === reportId ? { ...report, ...updated, id: reportId } : report,
+    )
+    localStorage.setItem(USER_REPORTS_CACHE_KEY, JSON.stringify(userCache))
+  }
+
+  return updated
+}
+
+export async function deleteReport(reportId: number): Promise<void> {
+  const response = await apiRequest(`/api/reports/${reportId}`, { method: 'DELETE' })
+  if (!response.ok) {
+    throw new Error('Não foi possível excluir a ocorrência.')
+  }
+
+  localStorage.setItem(
+    REPORTS_CACHE_KEY,
+    JSON.stringify(getCachedReports().filter((report) => report.id !== reportId)),
+  )
+  localStorage.setItem(
+    USER_REPORTS_CACHE_KEY,
+    JSON.stringify(getCachedUserReports().filter((report) => report.id !== reportId)),
+  )
+}
+
 export function getCachedUserReports(): ReportResponseDTO[] {
   const cached = localStorage.getItem(USER_REPORTS_CACHE_KEY)
   if (!cached) return []

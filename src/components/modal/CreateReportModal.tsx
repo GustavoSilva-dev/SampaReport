@@ -1,9 +1,9 @@
-import { useRef, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { ImageUpload } from '../ImageUpload'
 import { FaMapMarkerAlt, FaTimes } from 'react-icons/fa'
 import type { ReportRequestDTO, ReportType } from '../../types'
-import { createReport } from '../../services/reportService'
+import { createReport, updateReport, getCachedReports } from '../../services/reportService'
 import {
   getAddressFromCoordinates,
   getCoordinatesFromAddress,
@@ -15,6 +15,15 @@ interface CreateReportModalProps {
   isOpen: boolean
   onClose: () => void
   onSuccess?: () => void
+  mode?: 'create' | 'edit'
+  reportId?: number
+  initialData?: {
+    titulo: string
+    descricao: string
+    categoria: string
+    endereco: string
+    fotoAntesUrl: string
+  }
 }
 
 const categories: { value: ReportType; label: string }[] = [
@@ -33,7 +42,14 @@ const initialForm = {
   endereco: '',
 }
 
-export function CreateReportModal({ isOpen, onClose, onSuccess }: CreateReportModalProps) {
+export function CreateReportModal({
+  isOpen,
+  onClose,
+  onSuccess,
+  mode = 'create',
+  reportId,
+  initialData,
+}: CreateReportModalProps) {
   const [form, setForm] = useState(initialForm)
   const [imageUrl, setImageUrl] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -44,6 +60,32 @@ export function CreateReportModal({ isOpen, onClose, onSuccess }: CreateReportMo
   const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestion[]>([])
   const [isSearchingLocation, setIsSearchingLocation] = useState(false)
   const locationSearchTimeout = useRef<number | null>(null)
+
+  useEffect(() => {
+    if (!isOpen || mode !== 'edit' || !initialData) return
+
+    const categoryByLabel: Record<string, ReportType> = {
+      'Asfalto / Buracos': 'ASFALTO_BURACOS',
+      'Iluminação Pública': 'ILUMINACAO_PUBLICA',
+      'Sinalização de Trânsito': 'SINALIZACAO_TRANSITO',
+      'Lixo / Entulho': 'LIXO_ENTULHO',
+      'Esgoto / Alagamento': 'ESGOTO_ALAGAMENTO',
+      'Mobilidade / Calçadas': 'MOBILIDADE_CALCADAS',
+    }
+    const reportFromCache = reportId
+      ? getCachedReports().find((report) => report.id === reportId)
+      : undefined
+
+    setForm({
+      titulo: initialData.titulo,
+      descricao: initialData.descricao,
+      categoria: categoryByLabel[initialData.categoria] ?? (initialData.categoria as ReportType),
+      endereco: initialData.endereco,
+    })
+    setImageUrl(initialData.fotoAntesUrl)
+    setLatitude(reportFromCache?.latitude ?? null)
+    setLongitude(reportFromCache?.longitude ?? null)
+  }, [isOpen, mode, reportId, initialData])
 
   if (!isOpen) return null
 
@@ -191,7 +233,11 @@ export function CreateReportModal({ isOpen, onClose, onSuccess }: CreateReportMo
     }
 
     try {
-      await createReport(payload)
+      if (mode === 'edit' && reportId) {
+        await updateReport(reportId, payload)
+      } else {
+        await createReport(payload)
+      }
       setForm(initialForm)
       setLatitude(null)
       setLongitude(null)
@@ -215,8 +261,14 @@ export function CreateReportModal({ isOpen, onClose, onSuccess }: CreateReportMo
       <div className="reveal-up my-auto w-full max-w-lg rounded-2xl bg-white shadow-xl">
         <header className="flex items-start justify-between border-b border-zinc-100 px-5 py-5 sm:px-6">
           <div>
-            <h2 id="create-report-modal-title" className="text-xl font-bold text-[#183c36]">Registrar Nova Ocorrência</h2>
-            <p className="mt-1 text-xs text-zinc-500">Relate um problema urbano para validação da comunidade de São Paulo</p>
+            <h2 id="create-report-modal-title" className="text-xl font-bold text-[#183c36]">
+              {mode === 'edit' ? 'Edição de Report' : 'Registrar Nova Ocorrência'}
+            </h2>
+            <p className="mt-1 text-xs text-zinc-500">
+              {mode === 'edit'
+                ? 'Atualize os dados da ocorrência registrada'
+                : 'Relate um problema urbano para validação da comunidade de São Paulo'}
+            </p>
           </div>
           <button type="button" onClick={onClose} className="rounded-lg p-2 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-700" aria-label="Fechar formulário">
             <FaTimes aria-hidden="true" />
@@ -290,7 +342,9 @@ export function CreateReportModal({ isOpen, onClose, onSuccess }: CreateReportMo
 
           {error && <p className="text-xs font-medium text-red-600" role="alert">{error}</p>}
           <button type="submit" disabled={isSubmitting} className="w-full rounded-xl bg-emerald-500 py-3 text-sm font-bold text-white shadow-md transition-colors hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-70">
-            {isSubmitting ? 'Enviando report...' : 'Registrar ocorrência'}
+            {isSubmitting
+              ? (mode === 'edit' ? 'Salvando alterações...' : 'Enviando report...')
+              : (mode === 'edit' ? 'Salvar alterações' : 'Registrar ocorrência')}
           </button>
         </form>
       </div>
