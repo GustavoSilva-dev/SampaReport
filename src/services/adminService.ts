@@ -2,7 +2,7 @@ import { jsonRequest } from './apiService'
 import type { JustificativaRequestDTO, StatusUpdateDTO } from '../types'
 
 export async function updateReportStatus(reportId: number, status: string): Promise<unknown> {
-  const response = await jsonRequest('PUT', `/api/reports/${reportId}/status`, {
+  const response = await jsonRequest('PATCH', `/api/reports/${reportId}/status`, {
     status,
   } as StatusUpdateDTO)
 
@@ -19,6 +19,6 @@ export async function concluirServico(reportId: number, dto: JustificativaReques
   if (!response.ok) {
     throw new Error('Nao foi possivel concluir o atendimento.')
   }
-
+  
   return response.json().catch(() => null)
 }

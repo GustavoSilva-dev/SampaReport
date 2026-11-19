@@ -4,7 +4,7 @@ export function apiRequest(path: string, options?: RequestInit): Promise<Respons
     return fetch(`${apiUrl}${path}`, options);
 }
 
-export function jsonRequest(method: "POST" | "PUT", path: string, body: unknown): Promise<Response> {
+export function jsonRequest(method: "POST" | "PUT" | "PATCH", path: string, body: unknown): Promise<Response> {
     return apiRequest(path, {
         method,
         headers: { "Content-Type": "application/json" },

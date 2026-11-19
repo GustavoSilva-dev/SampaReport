@@ -51,6 +51,8 @@ export function ReportCard({
   const isPendingEvaluation = localStatus === 'Em Homologação'
   const isCompleted = localStatus === 'Concluído'
   const isReportOwner = report.autor.id === currentUserId
+  const loggedUser = JSON.parse(localStorage.getItem('logged-user') || '{}') as { perfil?: 'ROLE_USER' | 'ROLE_ADMIN' }
+  const isAdmin = loggedUser.perfil === 'ROLE_ADMIN'
 
   useEffect(() => {
     setLocalStatus(report.status)
@@ -252,7 +254,13 @@ export function ReportCard({
           >
             {hasUpvoted ? '❤ Apoiado' : `♡ Apoiar (${report.quantidadeApoios})`}
           </button>
-          <button type="button" onClick={() => setIsCommentsOpen(true)} className="rounded-md border border-zinc-200 px-2 py-1 text-[10px] text-zinc-700 hover:bg-zinc-50">
+          <button
+            type="button"
+            disabled={isAdmin}
+            onClick={() => setIsCommentsOpen(true)}
+            title={isAdmin ? 'Administradores não podem comentar' : undefined}
+            className="rounded-md border border-zinc-200 px-2 py-1 text-[10px] text-zinc-700 hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
             <FaComments className="inline-block mr-1" />
             Comentários
           </button>
