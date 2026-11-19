@@ -47,12 +47,16 @@ O projeto busca diminuir a lentidão e a falta de transparência dos chamados de
 ## Estrutura do projeto
 
 ```text
+public/                   # Imagens, ícones e arquivos públicos
 src/
 ├── assets/                 # Imagens, fotos e recursos visuais
 ├── components/             # Componentes reutilizáveis da interface
+│   └── modal/              # Modais da aplicação
 ├── pages/
 │   ├── app/                # Telas da plataforma
+│   ├── error/              # Telas de erro
 │   └── institucional/     # Home, sobre, FAQ, contato e integrantes
+├── services/               # Serviços de integração e regras de negócio
 ├── types/                  # Tipos compartilhados
 ├── App.tsx                 # Rotas principais
 ├── index.css               # Estilos globais
