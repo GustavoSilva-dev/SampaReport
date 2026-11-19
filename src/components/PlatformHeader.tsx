@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { CreateReportModal } from './modal/CreateReportModal'
 import { FaBars, FaTimes } from 'react-icons/fa'
 import type { UsuarioResponseDTO } from '../services/registerService'
@@ -10,11 +10,18 @@ interface PlatformHeaderProps {
 }
 
 export function PlatformHeader({ active = 'feed', onReportCreated }: PlatformHeaderProps) {
+    const navigate = useNavigate()
     const [isCreateReportOpen, setIsCreateReportOpen] = useState(false)
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const loggedUser: UsuarioResponseDTO | null = JSON.parse(localStorage.getItem('logged-user') || 'null')
     const userName = loggedUser?.nome || 'Visitante'
     const userInitial = userName.charAt(0).toUpperCase()
+
+    function handleLogout() {
+        localStorage.clear()
+        setIsMenuOpen(false)
+        navigate('/')
+    }
 
     return (
         <>
@@ -63,6 +70,15 @@ export function PlatformHeader({ active = 'feed', onReportCreated }: PlatformHea
                             <p className="text-[9px] text-zinc-500">{loggedUser?.perfil == "ROLE_USER" ? "Perfil Cidadão" : "Perfil Admin"}</p>
                         </div>
                     </div>
+                    {loggedUser && (
+                        <button
+                            type="button"
+                            onClick={handleLogout}
+                            className="hidden rounded-md border border-red-200 px-3 py-2 text-[11px] font-medium text-red-700 transition-colors hover:bg-red-50 sm:block"
+                        >
+                            Sair da Conta
+                        </button>
+                    )}
                     <button
                         type="button"
                         onClick={() => setIsMenuOpen((isOpen) => !isOpen)}
@@ -86,6 +102,15 @@ export function PlatformHeader({ active = 'feed', onReportCreated }: PlatformHea
                     <Link onClick={() => setIsMenuOpen(false)} to="/admin" className={`block rounded-md px-3 py-2 text-xs ${active === 'admin' ? 'text-[#12a879]' : 'text-zinc-900'}`}>
                         Painel Prefeitura
                     </Link>
+                    {loggedUser && (
+                        <button
+                            type="button"
+                            onClick={handleLogout}
+                            className="mt-2 w-full rounded-md border border-red-200 px-3 py-2 text-left text-xs font-medium text-red-700 hover:bg-red-50"
+                        >
+                            Sair da Conta
+                        </button>
+                    )}
                 </nav>
             )}
         </header>
