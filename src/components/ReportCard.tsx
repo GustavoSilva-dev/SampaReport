@@ -1,9 +1,10 @@
-import type { Report } from '../types'
+import type { Justificativa, Report } from '../types'
 import { FaHistory, FaMapMarkerAlt, FaComments } from 'react-icons/fa'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CommentModal } from './modal/CommentModal'
 import { AuditModal } from './modal/AuditModal'
 import { MdEngineering } from "react-icons/md";
+import { getCachedJustificativa, getJustificativaByReportId } from '../services/justifyService'
 
 interface ReportCardProps {
   report: Report
@@ -23,16 +24,49 @@ export function ReportCard({ report, currentUserId, hasUpvoted = false, isUpvoti
   const [isCommentsOpen, setIsCommentsOpen] = useState(false)
   const [isAuditOpen, setIsAuditOpen] = useState(false)
   const [activePhoto, setActivePhoto] = useState(0)
+  const [justificativa, setJustificativa] = useState<Justificativa | null>(null)
   const reportId = Number(report.id.replace(/\D/g, '')) || 0
   const initial = report.autor.nome.substring(0, 1).toUpperCase()
   const approvalProgress = Math.min((report.quantidadeApoios / 5) * 100, 100)
   const reachedApprovalGoal = report.quantidadeApoios >= 5
   const statusMessage = statusMessages[report.status]
-  const photos = [report.imagemUrl, report.justificativa?.dsImagemDepoisUrl].filter((image): image is string => Boolean(image))
-  const hasBeforeAndAfter = photos.length > 1
   const isPendingEvaluation = report.status === 'Em Homologação'
   const isCompleted = report.status === 'Concluído'
   const isReportOwner = report.autor.id === currentUserId
+
+  useEffect(() => {
+    const needsJustification = report.status === 'Em Homologação' || report.status === 'Concluído'
+    if (!needsJustification) {
+      setJustificativa(null)
+      setActivePhoto(0)
+      return
+    }
+
+    const cached = getCachedJustificativa(reportId)
+    setJustificativa(cached)
+
+    let isActive = true
+    void getJustificativaByReportId(reportId).then((value) => {
+      if (isActive) setJustificativa(value)
+    })
+
+    return () => {
+      isActive = false
+    }
+  }, [report.status, reportId])
+
+  function formatCompletionDate(value: string) {
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return value
+    return new Intl.DateTimeFormat('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    }).format(date)
+  }
+
+  const photos = [report.imagemUrl, justificativa?.fotoDepoisUrl].filter((image): image is string => Boolean(image))
+  const hasBeforeAndAfter = photos.length > 1
 
   return (
     <article className="w-full min-w-0 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm reveal-up sm:p-5">
@@ -85,7 +119,7 @@ export function ReportCard({ report, currentUserId, hasUpvoted = false, isUpvoti
               ›
             </button>
             <span className="absolute bottom-2 left-2 rounded-md bg-black/65 px-2 py-1 text-[9px] text-white">
-              {activePhoto + 1}/2 · {activePhoto === 0 ? 'Foto do Problema' : 'Reparo Concluído'}
+              {activePhoto === 0 ? 'Antes (Foto do Problema)' : 'Depois (Foto da Correção)'}
             </span>
           </>
         )}
@@ -96,11 +130,16 @@ export function ReportCard({ report, currentUserId, hasUpvoted = false, isUpvoti
         )}
       </div>
       <p className="mt-2 text-[12px] leading-4 text-zinc-600">{report.descricao}</p>
-      {report.justificativa && (
+      {justificativa && (
         <div className="mt-3 rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-2.5">
           <p className="text-[10px] font-semibold text-emerald-800 gap-1 flex items-center">
             <MdEngineering /> Nota da Prefeitura</p>
-          <p className="mt-1 text-[11px] leading-4 text-emerald-900">{report.justificativa.dsJustificativa}</p>
+          <p className="mt-1 text-[11px] leading-4 text-emerald-900">{justificativa.notaTecnica}</p>
+          {justificativa.dataConclusao && (
+            <p className="mt-1 text-[9px] font-medium text-zinc-500">
+              Concluído em {formatCompletionDate(justificativa.dataConclusao)}
+            </p>
+          )}
         </div>
       )}
       <div className="mt-2 rounded-lg bg-emerald-50 px-2.5 py-2">
@@ -119,7 +158,7 @@ export function ReportCard({ report, currentUserId, hasUpvoted = false, isUpvoti
       </div>
       <div className="mt-2 flex items-center border-t border-zinc-100 pt-2">
         <div className="flex w-full flex-wrap items-center gap-2">
-          {isPendingEvaluation && (
+          {isPendingEvaluation && report.autor.id === currentUserId && (
             <button type="button" onClick={() => setIsAuditOpen(true)} className="w-full rounded-md bg-[#12a879] px-3 py-2 text-[11px] font-medium text-white transition-colors hover:bg-emerald-700">
               Avaliar Reparo
             </button>

@@ -129,7 +129,6 @@ export async function getCityFromCoordinates(lat: number, lon: number): Promise<
   }
 
   const result = await response.json() as NominatimResult
-  console.log(result);
   const city = result.address?.road + (result.address?.suburb ? ", " + result.address?.suburb : '')
     || result.address?.town
     || result.address?.municipality

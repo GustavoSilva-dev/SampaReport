@@ -72,11 +72,17 @@ export interface Report {
   quantidadeApoios: number
   imagemUrl: string
   autor: Usuario
-  justificativa?: {
-    dsImagemDepoisUrl?: string
-    dsJustificativa: string
-  }
+  justificativa?: Justificativa
   avaliacao?: number
+}
+
+export interface Justificativa {
+  id: number
+  fotoDepoisUrl: string
+  notaTecnica: string
+  dataConclusao: string
+  adminId: number
+  reportId: number
 }
 
 export interface ComentarioRequestDTO {

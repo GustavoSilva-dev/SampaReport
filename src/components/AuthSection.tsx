@@ -1,7 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from "react-router-dom"
 import { handleLogin, handleRegister } from '../services/registerService'
-import prefeituraLogo from '../assets/prefeitura-logo.png'
 
 type AuthMode = 'login' | 'register'
 type UserRole = 'ROLE_USER' | 'ROLE_ADMIN'
@@ -120,8 +119,7 @@ function AuthSection() {
       <div className="grid items-start gap-10 lg:grid-cols-[.9fr_1.1fr] lg:gap-20">
         <div className="max-w-md lg:pt-32">
           <div className="mb-7 flex items-center gap-2 text-[10px] font-mono uppercase tracking-[.12em] text-[#12a879] moveRight moveRight-delay-1">
-          <span className="h-[6px] w-[6px] rounded-full bg-green-300 animate-ping" />Global Solution FIAP · Citizen Tech
-          <img className="h-7 w-auto z-100 ml-2" src={prefeituraLogo} alt="Prefeitura de São Paulo" />
+          <span className="h-[6px] w-[6px] rounded-full bg-green-300 animate-ping" />Global Solution 2026.2 - FIAP · Citizen Tech
           </div>
 
           <h1 className="text-[clamp(34px,5vw,54px)] md:text-[70px] font-extrabold tracking-[-.08em] text-[#183c36] justify-center moveRight moveRight-delay-3">
