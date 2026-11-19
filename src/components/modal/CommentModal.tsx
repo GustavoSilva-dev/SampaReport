@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { FaMapMarkerAlt, FaComments } from 'react-icons/fa'
 import { addComment, getComments } from '../../services/commentService'
@@ -30,6 +30,7 @@ export function CommentModal({ isOpen, onClose, reportId, reportTitulo, report }
   const [isLoading, setIsLoading] = useState(false)
   const [isSending, setIsSending] = useState(false)
   const [error, setError] = useState('')
+  const commentsEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!isOpen) return
@@ -58,6 +59,12 @@ export function CommentModal({ isOpen, onClose, reportId, reportTitulo, report }
       isActive = false
     }
   }, [isOpen, reportId])
+
+  useEffect(() => {
+    if (!isLoading && comments.length > 0) {
+      commentsEndRef.current?.scrollIntoView({ block: 'nearest' })
+    }
+  }, [comments, isLoading])
 
   if (!isOpen) return null
 
@@ -105,7 +112,7 @@ export function CommentModal({ isOpen, onClose, reportId, reportTitulo, report }
       aria-modal="true"
       aria-labelledby="comment-modal-title"
     >
-      <div className="reveal-up my-auto max-h-[calc(100dvh-1.5rem)] w-full max-w-4xl overflow-y-auto rounded-2xl border border-zinc-100 bg-white shadow-xl sm:max-h-[90vh]">
+      <div className="reveal-up my-auto max-h-[calc(100dvh-1.5rem)] w-full max-w-4xl overflow-hidden rounded-2xl border border-zinc-100 bg-white shadow-xl sm:max-h-[90vh]">
         <header className="flex items-start justify-between border-b border-zinc-100 px-5 py-4 sm:px-6">
           <div className="min-w-0 pr-4">
             <h2 id="comment-modal-title" className="text-lg font-medium text-zinc-900">
@@ -123,7 +130,7 @@ export function CommentModal({ isOpen, onClose, reportId, reportTitulo, report }
           </button>
         </header>
 
-        <div className="grid min-h-0 md:grid-cols-[minmax(260px,0.8fr)_minmax(0,1.2fr)]">
+        <div className="grid min-h-0 md:h-[470px] md:grid-cols-[minmax(260px,0.8fr)_minmax(0,1.2fr)]">
           <section className="border-b border-zinc-100 bg-emerald-50/50 p-5 sm:p-6 md:border-b-0 md:border-r" aria-label="Informações do report">
             <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm">
               <img src={report.imagemUrl} alt="" className="h-40 w-full object-cover" />
@@ -143,7 +150,7 @@ export function CommentModal({ isOpen, onClose, reportId, reportTitulo, report }
           </section>
 
           <section className="flex min-h-0 flex-col p-5 sm:p-6" aria-label="Comentários do report">
-            <form onSubmit={handleSendComment} className="space-y-2">
+            <form onSubmit={handleSendComment} className="shrink-0 space-y-2">
               <label htmlFor={`comment-input-${reportId}`} className="sr-only">Novo comentário</label>
               <textarea
                 id={`comment-input-${reportId}`}
@@ -169,7 +176,7 @@ export function CommentModal({ isOpen, onClose, reportId, reportTitulo, report }
               </div>
             </form>
 
-            <div className="mt-5 min-h-0 max-h-80 space-y-4 overflow-y-auto pr-2">
+            <div className="mt-5 h-64 space-y-4 overflow-y-auto pr-2 md:h-auto md:min-h-0 md:flex-1">
               {isLoading ? (
                 <p className="py-6 text-center text-sm text-zinc-500" role="status">Carregando comentários...</p>
               ) : comments.length === 0 ? (
@@ -195,6 +202,7 @@ export function CommentModal({ isOpen, onClose, reportId, reportTitulo, report }
                   )
                 })
               )}
+              <div ref={commentsEndRef} />
             </div>
           </section>
         </div>
