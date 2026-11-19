@@ -2,45 +2,56 @@ import brayanImage from '../../assets/brayan.png'
 import brenoImage from '../../assets/breno.jpg'
 import edilsonImage from '../../assets/edilson.jpeg'
 import gustavoImage from '../../assets/gustavo.jpeg'
+import { Link } from 'react-router-dom'
 import { Footer } from '../../components/Footer'
 import { Header } from '../../components/Header'
 
-type Member = {
+export type Member = {
+  slug: string
   name: string
   rm: string
   image: string
   linkedIn: string
   github: string
+  role: string
 }
 
-const members: Member[] = [
+export const members: Member[] = [
   {
+    slug: 'gustavo-soares-silva',
     name: 'Gustavo Soares Silva',
     rm: 'RM573880',
     image: gustavoImage,
     linkedIn: 'https://www.linkedin.com/in/gustavo-silva-23575638b/',
     github: 'https://github.com/GustavoSilva-dev',
+    role: 'Desenvolvedor',
   },
   {
+    slug: 'edilson-condori',
     name: 'Edilson Condori',
     rm: 'RM571464',
     image: edilsonImage,
     linkedIn: 'https://www.linkedin.com/in/edilson-condori/',
     github: 'https://github.com/Edilson-Cm',
+    role: 'Desenvolvedor',
   },
   {
+    slug: 'brayan-dos-santos-sousa',
     name: 'Brayan dos Santos Sousa',
     rm: 'RM564317',
     image: brayanImage,
     linkedIn: 'https://www.linkedin.com/in/brayan-dos-santos-sousa/',
     github: 'https://github.com/Brayan511',
+    role: 'Desenvolvedor',
   },
   {
+    slug: 'breno-henrique-de-castro-rocha',
     name: 'Breno Henrique de Castro Rocha',
     rm: 'RM572922',
     image: brenoImage,
     linkedIn: 'https://www.linkedin.com/in/breno-henrique-de-castro-rocha-79b24b24b/',
     github: 'https://github.com/BrenoRocha1',
+    role: 'Desenvolvedor',
   },
 ]
 
@@ -84,11 +95,17 @@ function Integrantes() {
                 className={`reveal-up reveal-delay-${Math.min(index + 1, 3)} overflow-hidden rounded-xl border border-zinc-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-emerald-400 hover:shadow-lg`}
                 key={member.rm}
               >
-                <img className="h-64 w-full object-cover" src={member.image} alt={`Foto de ${member.name}`} />
+                <Link to={`/integrantes/${member.slug}`} aria-label={`Ver perfil de ${member.name}`}>
+                  <img className="h-64 w-full object-cover" src={member.image} alt={`Foto de ${member.name}`} />
+                </Link>
                 <div className="p-6">
                   <p className="text-[10px] uppercase tracking-[.14em] text-emerald-600">{member.rm} · 1TDSR</p>
-                  <h2 className="mt-3 text-lg font-bold leading-tight text-zinc-900">{member.name}</h2>
-                  <p className="mt-2 text-xs text-zinc-600">Desenvolvedor</p>
+                  <h2 className="mt-3 text-lg font-bold leading-tight text-zinc-900">
+                    <Link className="transition-colors hover:text-emerald-600" to={`/integrantes/${member.slug}`}>
+                      {member.name}
+                    </Link>
+                  </h2>
+                  <p className="mt-2 text-xs text-zinc-600">{member.role}</p>
                   <div className="mt-6 flex gap-2">
                     <a
                       className="inline-flex items-center gap-2 rounded-full border border-zinc-200 px-3 py-2 text-[10px] text-zinc-600 transition-colors hover:border-emerald-500 hover:text-emerald-600"

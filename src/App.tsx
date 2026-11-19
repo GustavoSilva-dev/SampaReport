@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import Faq from './pages/institucional/Faq'
 import Home from './pages/institucional/Home'
 import Integrantes from './pages/institucional/Integrantes'
+import IntegranteDetalhe from './pages/institucional/IntegranteDetalhe'
 import Sobre from './pages/institucional/Sobre'
 import Contato from './pages/institucional/Contato'
 import FeedPage from './pages/app/FeedPage'
@@ -40,6 +41,7 @@ function App() {
         <Route path="/" element={loggedUser?.id ? <Navigate to="/plataforma/feed" replace /> : <Home />} />
         <Route path="/sobre" element={<Sobre />} />
         <Route path="/integrantes" element={<Integrantes />} />
+        <Route path="/integrantes/:slug" element={<IntegranteDetalhe />} />
         <Route path="/faq" element={<Faq />} />
         <Route path="/contato" element={<Contato />} />
         <Route path="/plataforma/feed" element={<ProtectedRoute><FeedPage /></ProtectedRoute>} />
