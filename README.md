@@ -115,7 +115,7 @@ npm run lint
 - **Repositório GitHub:** [GustavoSilva-dev/SampaReport](https://github.com/GustavoSilva-dev/SampaReport)
 - **Aplicação publicada na Vercel:** [SampaReport](https://sampareport-client.vercel.app/)
 - **API Java:** [SampaReport-API](https://sampareport-api.onrender.com)
-- **Vídeo de apresentação no YouTube:** _inserir URL do vídeo de até três minutos_
+- **Vídeo de apresentação no YouTube:** [Assistir ao vídeo](https://www.youtube.com/watch?v=2uLDH8EbUUk)
 
 ## Integrantes
 
