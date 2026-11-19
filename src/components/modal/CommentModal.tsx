@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { createPortal } from 'react-dom'
-import { FaMapMarkerAlt } from 'react-icons/fa'
+import { FaMapMarkerAlt, FaComments } from 'react-icons/fa'
 import { addComment, getComments } from '../../services/commentService'
 import type { ComentarioResponseDTO, Report } from '../../types'
 
@@ -108,7 +108,9 @@ export function CommentModal({ isOpen, onClose, reportId, reportTitulo, report }
       <div className="reveal-up my-auto max-h-[calc(100dvh-1.5rem)] w-full max-w-4xl overflow-y-auto rounded-2xl border border-zinc-100 bg-white shadow-xl sm:max-h-[90vh]">
         <header className="flex items-start justify-between border-b border-zinc-100 px-5 py-4 sm:px-6">
           <div className="min-w-0 pr-4">
-            <h2 id="comment-modal-title" className="text-lg font-medium text-zinc-900">Comentários</h2>
+            <h2 id="comment-modal-title" className="text-lg font-medium text-zinc-900">
+              <FaComments className="inline-block mr-2" />
+              Comentários</h2>
             <p className="mt-1 truncate text-xs text-zinc-500">{reportTitulo}</p>
           </div>
           <button

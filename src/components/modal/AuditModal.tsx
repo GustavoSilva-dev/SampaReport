@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { getReportHistory, type ReportHistory } from '../../services/logService'
+import { getReportHistory } from '../../services/logService'
+import type { ReportHistory } from '../../types'
 
 interface AuditModalProps {
   isOpen: boolean

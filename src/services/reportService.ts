@@ -2,6 +2,7 @@ import { apiRequest, jsonRequest } from './apiService'
 import type { ReportRequestDTO, ReportResponseDTO } from '../types'
 
 const REPORTS_CACHE_KEY = 'reports-list'
+const USER_REPORTS_CACHE_KEY = 'logged-user-reports'
 
 export async function createReport(reportData: ReportRequestDTO): Promise<unknown> {
   const response = await jsonRequest('POST', '/api/reports', reportData)
@@ -24,6 +25,32 @@ export function getCachedReports(): ReportResponseDTO[] {
     return Array.isArray(reports) ? reports : []
   } catch {
     localStorage.removeItem(REPORTS_CACHE_KEY)
+    return []
+  }
+}
+
+export async function getUserReports(usuarioId: number): Promise<ReportResponseDTO[]> {
+  try {
+    const response = await apiRequest(`/api/usuarios/${usuarioId}/reports`)
+    const reports = await parseResponse<ReportResponseDTO[]>(response)
+    localStorage.setItem(USER_REPORTS_CACHE_KEY, JSON.stringify(reports))
+    return reports
+  } catch (error) {
+    const cached = getCachedUserReports()
+    if (cached.length > 0) return cached
+    throw error
+  }
+}
+
+export function getCachedUserReports(): ReportResponseDTO[] {
+  const cached = localStorage.getItem(USER_REPORTS_CACHE_KEY)
+  if (!cached) return []
+
+  try {
+    const reports = JSON.parse(cached) as ReportResponseDTO[]
+    return Array.isArray(reports) ? reports : []
+  } catch {
+    localStorage.removeItem(USER_REPORTS_CACHE_KEY)
     return []
   }
 }
