@@ -26,7 +26,7 @@ export function DetailsModal({ report, address, categoryLabel, authorName, onClo
           </div>
           <p className="mt-3 text-sm leading-6 text-zinc-600">{report.descricao}</p>
           <div className="mt-4 space-y-2 text-xs text-zinc-600">
-            <p><FaMapMarkerAlt className="mr-1 inline text-emerald-600" aria-hidden="true" />{address}</p>
+            <p><FaMapMarkerAlt className="animate-ping h-2 mr-1 inline text-emerald-600" aria-hidden="true" />{address}</p>
             <p><strong>Categoria:</strong> {categoryLabel}</p>
             <p><strong>Autor:</strong> {authorName}</p>
           </div>
