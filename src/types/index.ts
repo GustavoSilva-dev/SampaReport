@@ -113,3 +113,18 @@ export interface ReportHistoryResponse {
   dataAlteracao?: string
   dtMudanca?: string
 }
+
+export interface StatusUpdateDTO {
+  status: string
+}
+
+export interface JustificativaRequestDTO {
+  fotoDepoisUrl: string
+  notaTecnica: string
+  adminId: number
+}
+
+export interface GeneralRatingResponse {
+  generalRating: number
+  totalReviews: number
+}

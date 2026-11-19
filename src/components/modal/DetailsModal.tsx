@@ -1,16 +1,19 @@
 import { FaMapMarkerAlt, FaTimes } from 'react-icons/fa'
-import type { AdminReport } from '../../types'
+import type { ReportResponseDTO } from '../../types'
 
 interface DetailsModalProps {
-  report: AdminReport
+  report: ReportResponseDTO
+  address: string
+  categoryLabel: string
+  authorName: string
   onClose: () => void
 }
 
-export function DetailsModal({ report, onClose }: DetailsModalProps) {
+export function DetailsModal({ report, address, categoryLabel, authorName, onClose }: DetailsModalProps) {
   return (
     <div className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true" aria-labelledby="details-title">
       <div className="reveal-up w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-xl">
-        <img src={report.imagemUrl} alt="" className="h-44 w-full object-cover" />
+        <img src={report.fotoAntesUrl} alt="" className="h-44 w-full object-cover" />
         <div className="p-5 sm:p-6">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -23,9 +26,9 @@ export function DetailsModal({ report, onClose }: DetailsModalProps) {
           </div>
           <p className="mt-3 text-sm leading-6 text-zinc-600">{report.descricao}</p>
           <div className="mt-4 space-y-2 text-xs text-zinc-600">
-            <p><FaMapMarkerAlt className="mr-1 inline text-emerald-600" aria-hidden="true" />{report.endereco}</p>
-            <p><strong>Categoria:</strong> {report.categoria}</p>
-            <p><strong>Autor:</strong> {report.autor}</p>
+            <p><FaMapMarkerAlt className="mr-1 inline text-emerald-600" aria-hidden="true" />{address}</p>
+            <p><strong>Categoria:</strong> {categoryLabel}</p>
+            <p><strong>Autor:</strong> {authorName}</p>
           </div>
         </div>
       </div>

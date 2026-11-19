@@ -1,25 +1,52 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react'
 import { FaCamera, FaTimes } from 'react-icons/fa'
-import type { AdminReport } from '../../types'
+import { uploadImageToCloudinary } from '../../services/cloudinaryUploadService'
+import type { JustificativaRequestDTO, ReportResponseDTO } from '../../types'
 
 interface CompletionModalProps {
-  report: AdminReport
+  report: ReportResponseDTO
   onClose: () => void
-  onComplete: (reportId: number) => void
+  onComplete: (reportId: number, dto: JustificativaRequestDTO) => Promise<void>
 }
 
 export function CompletionModal({ report, onClose, onComplete }: CompletionModalProps) {
   const [photoName, setPhotoName] = useState('')
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [justification, setJustification] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
   function handlePhotoChange(event: ChangeEvent<HTMLInputElement>) {
-    setPhotoName(event.target.files?.[0]?.name ?? '')
+    const file = event.target.files?.[0] ?? null
+    setPhotoFile(file)
+    setPhotoName(file?.name ?? '')
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (!photoName || !justification.trim()) return
-    onComplete(report.id)
+    if (!photoFile || !justification.trim() || isSubmitting) return
+
+    const loggedUser = JSON.parse(localStorage.getItem('logged-user') || '{}') as { id?: number }
+    if (!loggedUser.id) {
+      setError('Faça login como administrador para concluir o serviço.')
+      return
+    }
+
+    setIsSubmitting(true)
+    setError('')
+
+    try {
+      const fotoDepoisUrl = await uploadImageToCloudinary(photoFile)
+      await onComplete(report.id, {
+        fotoDepoisUrl,
+        notaTecnica: justification.trim(),
+        adminId: loggedUser.id,
+      })
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : 'Não foi possível enviar a comprovação.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -48,8 +75,9 @@ export function CompletionModal({ report, onClose, onComplete }: CompletionModal
             placeholder="Descreva o serviço realizado..."
             className="w-full resize-none rounded-xl border border-zinc-200 bg-zinc-50/50 p-3 text-sm outline-none focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500"
           />
-          <button type="submit" className="w-full rounded-xl bg-emerald-500 py-3 text-sm font-bold text-white transition-colors hover:bg-emerald-600">
-            Enviar comprovação
+          {error && <p className="text-xs text-red-600" role="alert">{error}</p>}
+          <button type="submit" disabled={isSubmitting} className="w-full rounded-xl bg-emerald-500 py-3 text-sm font-bold text-white transition-colors hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-60">
+            {isSubmitting ? 'Enviando...' : 'Enviar comprovação'}
           </button>
         </form>
       </div>

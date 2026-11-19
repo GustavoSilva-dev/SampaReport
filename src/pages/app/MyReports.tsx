@@ -255,7 +255,7 @@ function MyReports() {
       <PlatformHeader active="reports" />
       <main className="mx-auto max-w-[1240px] px-5 pb-12 sm:px-8">
         <section className="border-b border-zinc-200 py-4">
-          <GeneralRatingCard isLoading={isLoading} />
+          <GeneralRatingCard />
           <div className="flex items-center justify-between gap-3">
             <h1 className="text-2xl font-semibold tracking-[-0.8px] text-[#183c36]">Meus Chamados &amp; Reports</h1>
             {loggedUser.id && (
