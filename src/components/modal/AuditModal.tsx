@@ -29,14 +29,15 @@ const statusMap: Record<string, string> = {
   'Aguardando Homologação': 'EM_HOMOLOGACAO',
   PENDENTE_COMUNIDADE: 'PENDENTE_COMUNIDADE',
   APROVADO_COMUNIDADE: 'APROVADO_COMUNIDADE',
+  'Aprovado pela Comunidade': 'APROVADO_COMUNIDADE',
+  'Em Andamento': 'EM_ANDAMENTO',
+  'Em Homologação': 'EM_HOMOLOGACAO',
+  'Concluído': 'CONCLUIDO',
   EM_ANDAMENTO: 'EM_ANDAMENTO',
   EM_HOMOLOGACAO: 'EM_HOMOLOGACAO',
   CONCLUIDO: 'CONCLUIDO',
   AGUARDANDO_APROVACAO: 'PENDENTE_COMUNIDADE',
   AGUARDANDO_HOMOLOGACAO: 'APROVADO_COMUNIDADE',
-  'Em Andamento': 'EM_ANDAMENTO',
-  'Em Homologação': 'EM_HOMOLOGACAO',
-  Concluído: 'CONCLUIDO',
 }
 
 function formatHistoryDate(value: string) {
@@ -85,10 +86,7 @@ export function AuditModal({ isOpen, onClose, reportId, statusAtual }: AuditModa
 
   if (!isOpen) return null
 
-  const latestHistoryStatus = history.length > 0
-    ? history.at(-1)?.statusNovo
-    : undefined
-  const currentStatus = statusMap[latestHistoryStatus ?? statusAtual] ?? latestHistoryStatus ?? statusAtual
+  const currentStatus = statusMap[statusAtual] ?? statusAtual
   const currentStageIndex = auditStages.findIndex((stage) => stage.status === currentStatus)
 
   return createPortal(

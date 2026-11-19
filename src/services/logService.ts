@@ -1,25 +1,5 @@
 import { apiRequest } from './apiService'
-
-export interface ReportHistory {
-  id: number
-  reportId: number
-  statusAnterior: string | null
-  statusNovo: string
-  dataAlteracao: string
-}
-
-interface ReportHistoryResponse {
-  id?: number
-  idHistory?: number
-  reportId?: number
-  idReport?: number
-  statusAnterior?: string | null
-  dsStatusAnterior?: string | null
-  statusNovo?: string
-  dsStatusNovo?: string
-  dataAlteracao?: string
-  dtMudanca?: string
-}
+import { type ReportHistory, type ReportHistoryResponse } from '../types'
 
 export async function getReportHistory(reportId: number): Promise<ReportHistory[]> {
   const response = await apiRequest(`/api/reports/${reportId}/history`, {

@@ -136,7 +136,7 @@ export function ReportCard({ report, currentUserId, hasUpvoted = false, isUpvoti
           >
             {hasUpvoted ? '❤ Apoiado' : `♡ Apoiar (${report.quantidadeApoios})`}
           </button>
-          <button type="button" onClick={() => setIsCommentsOpen(true)} className="rounded-md border border-zinc-200 px-2 py-1 text-[10px] text-zinc-700 hover:bg-zinc-50">▢ Comentários (8)</button>
+          <button type="button" onClick={() => setIsCommentsOpen(true)} className="rounded-md border border-zinc-200 px-2 py-1 text-[10px] text-zinc-700 hover:bg-zinc-50">▢ Comentários</button>
           {isCompleted && report.avaliacao && (
             <p className="rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-medium text-emerald-800">
               <span className="animate-spin absolute flex items-center">✦</span> 

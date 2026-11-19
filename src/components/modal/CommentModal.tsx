@@ -1,7 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { createPortal } from 'react-dom'
-import type { Comentario, Report } from '../../types'
 import { FaMapMarkerAlt } from 'react-icons/fa'
+import { addComment, getComments } from '../../services/commentService'
+import type { ComentarioResponseDTO, Report } from '../../types'
 
 interface CommentModalProps {
   isOpen: boolean
@@ -11,40 +12,51 @@ interface CommentModalProps {
   report: Report
 }
 
-const mockComments: Comentario[] = [
-  {
-    id: 1,
-    idReport: 1,
-    conteudo: 'Também percebi esse problema hoje. A passagem está bem perigosa.',
-    dataCriacao: '13/11/2026, 09:30',
-    autor: { id: 2, nome: 'Carlos Mendes', role: 'ROLE_USER' },
-  },
-  {
-    id: 2,
-    idReport: 2,
-    conteudo: 'Já informei os comerciantes da região para não deixarem mais materiais aqui.',
-    dataCriacao: '12/11/2026, 16:45',
-    autor: { id: 3, nome: 'Ana Souza', role: 'ROLE_USER' },
-  },
-]
+function formatCommentDate(value: string) {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return value
 
-function formatCurrentDate() {
-  return new Intl.DateTimeFormat('pt-BR', {
-    dateStyle: 'short',
-    timeStyle: 'short',
-  }).format(new Date())
+  const datePart = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short' })
+    .format(date)
+    .replace('.', '')
+  const timePart = new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' }).format(date)
+
+  return `${datePart.charAt(0).toUpperCase()}${datePart.slice(1)}, ${timePart}h`
 }
 
 export function CommentModal({ isOpen, onClose, reportId, reportTitulo, report }: CommentModalProps) {
-  const [comments, setComments] = useState<Comentario[]>([])
+  const [comments, setComments] = useState<ComentarioResponseDTO[]>([])
   const [content, setContent] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [isSending, setIsSending] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     if (!isOpen) return
+    let isActive = true
 
-    // Mock do GET /api/reports/${reportId}/comments
-    setComments(mockComments.filter((comment) => comment.idReport === reportId))
-    setContent('')
+    async function loadComments() {
+      setIsLoading(true)
+      setError('')
+      setComments([])
+      setContent('')
+
+      try {
+        const result = await getComments(reportId)
+        if (isActive) setComments(result)
+      } catch (loadError) {
+        if (isActive) {
+          setError(loadError instanceof Error ? loadError.message : 'Não foi possível carregar os comentários.')
+        }
+      } finally {
+        if (isActive) setIsLoading(false)
+      }
+    }
+
+    void loadComments()
+    return () => {
+      isActive = false
+    }
   }, [isOpen, reportId])
 
   if (!isOpen) return null
@@ -52,21 +64,38 @@ export function CommentModal({ isOpen, onClose, reportId, reportTitulo, report }
   async function handleSendComment(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    const trimmedContent = content.trim()
-    if (!trimmedContent) return
-
-    const newComment: Comentario = {
-      id: Date.now(),
-      idReport: reportId,
-      conteudo: trimmedContent,
-      dataCriacao: formatCurrentDate(),
-      autor: { id: 0, nome: 'Você', role: 'ROLE_USER' },
+    const loggedUser = JSON.parse(localStorage.getItem('logged-user') || '{}') as {
+      id?: number
     }
+    const trimmedContent = content.trim()
 
-    setComments((currentComments) => [...currentComments, newComment])
-    setContent('')
+    if (!loggedUser.id) {
+      setError('Faça login para enviar um comentário.')
+      return
+    }
+    if (!trimmedContent || isSending) return
 
-    // Futuro POST: fetch(`/api/reports/${reportId}/comments`, { method: 'POST', ... })
+    setIsSending(true)
+    setError('')
+
+    try {
+      const createdComment = await addComment(reportId, {
+        texto: trimmedContent,
+        usuarioId: loggedUser.id,
+      })
+      setComments((currentComments) => [
+        ...currentComments,
+        {
+          ...createdComment,
+          reportId: createdComment.reportId ?? reportId,
+        },
+      ])
+      setContent('')
+    } catch (sendError) {
+      setError(sendError instanceof Error ? sendError.message : 'Não foi possível enviar o comentário.')
+    } finally {
+      setIsSending(false)
+    }
   }
 
   return createPortal(
@@ -103,11 +132,10 @@ export function CommentModal({ isOpen, onClose, reportId, reportTitulo, report }
                 </div>
                 <h3 className="mt-2 text-sm font-medium leading-5 text-zinc-900">{report.titulo}</h3>
                 <p className="mt-2 text-xs leading-5 text-zinc-600">{report.descricao}</p>
-
                 <div className="mt-3 flex items-center gap-2">
                   <FaMapMarkerAlt className="mt-[-3px] h-2 w-2.5 shrink-0 text-emerald-500 animate-ping" title="Localização" />
                   <p className="text-[11px] text-zinc-500">{report.endereco}</p>
-                </div>   
+                </div>
               </div>
             </div>
           </section>
@@ -123,12 +151,14 @@ export function CommentModal({ isOpen, onClose, reportId, reportTitulo, report }
                 rows={3}
                 className="w-full resize-none rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
+              {error && <p className="text-xs text-red-600" role="alert">{error}</p>}
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-emerald-600"
+                  disabled={!content.trim() || isSending}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-[#12a879] px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Comentar
+                  {isSending ? 'Enviando...' : 'Comentar'}
                   <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" d="m22 2-7 20-4-9-9-4Z" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M22 2 11 13" />
@@ -138,23 +168,30 @@ export function CommentModal({ isOpen, onClose, reportId, reportTitulo, report }
             </form>
 
             <div className="mt-5 min-h-0 max-h-80 space-y-4 overflow-y-auto pr-2">
-              {comments.length === 0 ? (
+              {isLoading ? (
+                <p className="py-6 text-center text-sm text-zinc-500" role="status">Carregando comentários...</p>
+              ) : comments.length === 0 ? (
                 <p className="py-6 text-center text-sm text-zinc-500">Nenhum comentário ainda. Seja o primeiro a colaborar!</p>
               ) : (
-                comments.map((comment) => (
-                  <article key={comment.id} className="flex gap-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-medium text-emerald-800">
-                      {comment.autor.nome.substring(0, 1).toUpperCase()}
-                    </div>
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                        <p className="text-sm font-medium text-zinc-900">{comment.autor.nome}</p>
-                        <time className="text-[11px] text-zinc-400">{comment.dataCriacao}</time>
+                comments.map((comment) => {
+                  const authorName = comment.usuarioNome?.trim() || 'Cidadão'
+                  const initial = authorName.substring(0, 1).toUpperCase()
+
+                  return (
+                    <article key={comment.id} className="flex gap-3">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#12a879] text-xs font-medium text-white">
+                        {initial}
                       </div>
-                      <p className="mt-1 text-sm leading-5 text-zinc-600 font-extralight">{comment.conteudo}</p>
-                    </div>
-                  </article>
-                ))
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                          <p className="text-sm font-medium text-zinc-900">{authorName}</p>
+                          <time className="text-[11px] text-zinc-400">{formatCommentDate(comment.dataCriacao)}</time>
+                        </div>
+                        <p className="mt-1 text-sm leading-5 text-zinc-600 font-extralight">{comment.texto}</p>
+                      </div>
+                    </article>
+                  )
+                })
               )}
             </div>
           </section>

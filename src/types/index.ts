@@ -79,23 +79,37 @@ export interface Report {
   avaliacao?: number
 }
 
-export interface Comentario {
-  id: number
-  idReport: number
-  conteudo: string
-  dataCriacao: string
-  autor: {
-    id: number
-    nome: string
-    role: string
-  }
+export interface ComentarioRequestDTO {
+  texto: string
+  usuarioId: number
 }
 
-export interface HistoricoReport {
-  idHistory: number
-  idReport: number
-  dsStatusAnterior?: string
-  dsStatusNovo: string
-  dtMudanca: string
-  dsJustificativa: string
+export interface ComentarioResponseDTO {
+  id: number
+  texto: string
+  dataCriacao: string
+  usuarioId: number
+  reportId: number
+  usuarioNome: string
+}
+
+export interface ReportHistory {
+  id: number
+  reportId: number
+  statusAnterior: string | null
+  statusNovo: string
+  dataAlteracao: string
+}
+
+export interface ReportHistoryResponse {
+  id?: number
+  idHistory?: number
+  reportId?: number
+  idReport?: number
+  statusAnterior?: string | null
+  dsStatusAnterior?: string | null
+  statusNovo?: string
+  dsStatusNovo?: string
+  dataAlteracao?: string
+  dtMudanca?: string
 }
