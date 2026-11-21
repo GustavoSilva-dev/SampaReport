@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from "react-router-dom"
-import prefeituraLogo from '../assets/prefeitura-logo.png'
+import { handleLogin, handleRegister } from '../services/registerService'
 
 type AuthMode = 'login' | 'register'
 type UserRole = 'ROLE_USER' | 'ROLE_ADMIN'
@@ -32,12 +32,14 @@ function AuthSection() {
   const [errors, setErrors] = useState<AuthErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
+  const [apiError, setApiError] = useState('')
   const navigate = useNavigate()
 
   function changeMode(nextMode: AuthMode) {
     setMode(nextMode)
     setErrors({})
     setSuccessMessage('')
+    setApiError('')
   }
 
   function handleChange(field: 'name' | 'email' | 'password' | 'role', value: string) {
@@ -50,6 +52,7 @@ function AuthSection() {
       [field]: undefined,
     }))
     setSuccessMessage('')
+    setApiError('')
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -86,14 +89,29 @@ function AuthSection() {
 
     setIsSubmitting(true)
 
-    await new Promise((resolve) => {
-      window.setTimeout(resolve, 600)
-    })
+    try {
+      if (mode === 'login') {
+        await handleLogin({
+          email: values.email.trim(),
+          senha: values.password,
+        })
+      } else {
+        await handleRegister({
+          nome: values.name.trim(),
+          email: values.email.trim(),
+          senha: values.password,
+          perfil: values.role
+        })
+      }
 
-    localStorage.setItem('sampareport-profile', mode === 'register' ? values.role : 'ROLE_USER')
-    setSuccessMessage(mode === 'login' ? 'Login realizado com sucesso.' : 'Conta criada com sucesso.')
-    navigate("/plataforma/feed");
-    setIsSubmitting(false)
+      setSuccessMessage(mode === 'login' ? 'Login realizado com sucesso.' : 'Conta criada com sucesso.')
+      navigate("/plataforma/feed")
+    } catch (error) {
+      setSuccessMessage('')
+      setApiError(error instanceof Error ? error.message : 'Não foi possível concluir a operação.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -101,8 +119,7 @@ function AuthSection() {
       <div className="grid items-start gap-10 lg:grid-cols-[.9fr_1.1fr] lg:gap-20">
         <div className="max-w-md lg:pt-32">
           <div className="mb-7 flex items-center gap-2 text-[10px] font-mono uppercase tracking-[.12em] text-[#12a879] moveRight moveRight-delay-1">
-          <span className="h-[6px] w-[6px] rounded-full bg-green-300 animate-ping" />Global Solution FIAP · Citizen Tech
-          <img className="h-7 w-auto z-100 ml-2" src={prefeituraLogo} alt="Prefeitura de São Paulo" />
+          <span className="h-[6px] w-[6px] rounded-full bg-green-300 animate-ping" />Global Solution 2026.2 - FIAP · Citizen Tech
           </div>
 
           <h1 className="text-[clamp(34px,5vw,54px)] md:text-[70px] font-extrabold tracking-[-.08em] text-[#183c36] justify-center moveRight moveRight-delay-3">
@@ -210,6 +227,7 @@ function AuthSection() {
             {isSubmitting ? (mode === 'login' ? 'Entrando...' : 'Criando conta...') : (mode === 'login' ? 'Entrar' : 'Criar Conta')}
           </button>
 
+          {apiError && <p className="text-center text-sm text-red-500" role="alert">{apiError}</p>}
           {successMessage && <p className="text-center text-sm text-emerald-600" role="status">{successMessage}</p>}
           </form>
         </div>

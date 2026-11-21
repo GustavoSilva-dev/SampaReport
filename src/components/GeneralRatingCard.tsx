@@ -1,25 +1,36 @@
-export interface GeneralRatingCardProps {
-  rating?: number
-  totalReviews?: number
-  isLoading?: boolean
-}
+import { useEffect, useState } from 'react'
+import { getCachedGeneralRating, getGeneralRating } from '../services/metricsService'
+import type { GeneralRatingResponse } from '../types'
 
-export function GeneralRatingCard({
-  rating = 3.7,
-  totalReviews = 127,
-  isLoading = false,
-}: GeneralRatingCardProps) {
-  const displayRating = Math.min(Math.max(rating, 0), 5)
-  const filledStars = Math.round(displayRating)
+export function GeneralRatingCard() {
+  const [ratingData, setRatingData] = useState<GeneralRatingResponse>(() => getCachedGeneralRating())
+  const [loadingRating, setLoadingRating] = useState(true)
 
-  // Futuro GET /api/metrics/general-rating para substituir os valores fallback.
+  useEffect(() => {
+    let isActive = true
+
+    void getGeneralRating()
+      .then((data) => {
+        if (isActive) setRatingData(data)
+      })
+      .finally(() => {
+        if (isActive) setLoadingRating(false)
+      })
+
+    return () => {
+      isActive = false
+    }
+  }, [])
+
+  const displayRating = ratingData.generalRating
+
   return (
     <article
       className="mb-4 rounded-2xl border border-emerald-700 bg-white p-4 shadow-sm sm:p-5 moveRight"
-      aria-busy={isLoading}
+      aria-busy={loadingRating}
       aria-label="Avaliação geral dos serviços"
     >
-      {isLoading ? (
+      {loadingRating ? (
         <div className="animate-pulse space-y-3">
           <div className="h-4 w-56 rounded bg-zinc-200" />
           <div className="h-10 w-32 rounded bg-zinc-200" />
@@ -34,7 +45,11 @@ export function GeneralRatingCard({
               <span className="ml-1 text-base font-medium text-zinc-400 sm:text-lg">/ 5.0</span>
             </p>
           </div>
-          <p className="mt-2 text-sm text-zinc-500">{totalReviews.toLocaleString('pt-BR')} cidadãos avaliaram os serviços prestados</p>
+          <p className="mt-2 text-sm text-zinc-500">
+            {ratingData.totalReviews > 0
+              ? `${ratingData.totalReviews.toLocaleString('pt-BR')} avaliações`
+              : 'Sem avaliações ainda'}
+          </p>
         </>
       )}
     </article>

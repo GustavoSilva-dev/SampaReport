@@ -1,85 +1,50 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import type { HistoricoReport } from '../../types'
+import { getReportHistory } from '../../services/logService'
+import type { ReportHistory } from '../../types'
 
 interface AuditModalProps {
   isOpen: boolean
   onClose: () => void
   reportId: number
-  codigoProtocolo: string
   statusAtual: string
 }
 
 interface AuditStage {
   status: string
   title: string
+  activeDescription: string
 }
 
 const auditStages: AuditStage[] = [
-  { status: 'AGUARDANDO_APROVACAO', title: 'Ocorrência Registrada pelo Cidadão' },
-  { status: 'AGUARDANDO_HOMOLOGACAO', title: 'Aprovação Comunitária (5/5 Votos)' },
-  { status: 'EM_ANDAMENTO', title: 'Atendimento & Equipe em Campo' },
-  { status: 'EM_HOMOLOGACAO', title: 'Homologação & Envio do Antes/Depois' },
-  { status: 'CONCLUIDO', title: 'Conclusão & Avaliação Cidadã' },
+  { status: 'PENDENTE_COMUNIDADE', title: 'Ocorrência Registrada pelo Cidadão', activeDescription: 'Aguardando apoio comunitário' },
+  { status: 'APROVADO_COMUNIDADE', title: 'Aprovação Comunitária (5/5 Votos)', activeDescription: 'Aguardando andamento da prefeitura' },
+  { status: 'EM_ANDAMENTO', title: 'Atendimento & Equipe em Campo', activeDescription: 'Chamado encaminhado para a equipe responsável' },
+  { status: 'EM_HOMOLOGACAO', title: 'Homologação & Envio do Antes/Depois', activeDescription: 'Aguardando avaliação cidadã' },
+  { status: 'CONCLUIDO', title: 'Conclusão & Avaliação Cidadã', activeDescription: 'Chamado Concluído!' },
 ]
 
-const currentStatusMap: Record<string, string> = {
-  'Aguardando Aprovação': 'AGUARDANDO_APROVACAO',
-  'Aguardando Atendimento': 'AGUARDANDO_HOMOLOGACAO',
-  'Aguardando Homologação': 'AGUARDANDO_HOMOLOGACAO',
+const statusMap: Record<string, string> = {
+  'Aguardando Aprovação': 'PENDENTE_COMUNIDADE',
+  'Aguardando Atendimento': 'APROVADO_COMUNIDADE',
+  'Aguardando Homologação': 'EM_HOMOLOGACAO',
+  PENDENTE_COMUNIDADE: 'PENDENTE_COMUNIDADE',
+  APROVADO_COMUNIDADE: 'APROVADO_COMUNIDADE',
+  'Aprovado pela Comunidade': 'APROVADO_COMUNIDADE',
   'Em Andamento': 'EM_ANDAMENTO',
   'Em Homologação': 'EM_HOMOLOGACAO',
-  Concluído: 'CONCLUIDO',
+  'Concluído': 'CONCLUIDO',
+  EM_ANDAMENTO: 'EM_ANDAMENTO',
+  EM_HOMOLOGACAO: 'EM_HOMOLOGACAO',
+  CONCLUIDO: 'CONCLUIDO',
+  AGUARDANDO_APROVACAO: 'PENDENTE_COMUNIDADE',
+  AGUARDANDO_HOMOLOGACAO: 'APROVADO_COMUNIDADE',
 }
 
-const mockHistory: HistoricoReport[] = [
-  {
-    idHistory: 1,
-    idReport: 1,
-    dsStatusNovo: 'AGUARDANDO_APROVACAO',
-    dtMudanca: '2025-02-15T14:32:00',
-  },
-  {
-    idHistory: 2,
-    idReport: 2,
-    dsStatusAnterior: 'AGUARDANDO_APROVACAO',
-    dsStatusNovo: 'AGUARDANDO_APROVACAO',
-    dtMudanca: '2025-02-02T14:20:00',
-  },
-  {
-    idHistory: 3,
-    idReport: 2,
-    dsStatusAnterior: 'AGUARDANDO_APROVACAO',
-    dsStatusNovo: 'AGUARDANDO_HOMOLOGACAO',
-    dtMudanca: '2025-02-02T16:10:00',
-    dsJustificativa: 'A comunidade atingiu a meta mínima de apoios.',
-  },
-  {
-    idHistory: 4,
-    idReport: 3,
-    dsStatusAnterior: 'AGUARDANDO_APROVACAO',
-    dsStatusNovo: 'AGUARDANDO_APROVACAO',
-    dtMudanca: '2025-02-01T10:15:00',
-  },
-  {
-    idHistory: 5,
-    idReport: 3,
-    dsStatusAnterior: 'AGUARDANDO_APROVACAO',
-    dsStatusNovo: 'AGUARDANDO_HOMOLOGACAO',
-    dtMudanca: '2025-02-02T11:30:00',
-  },
-  {
-    idHistory: 6,
-    idReport: 3,
-    dsStatusAnterior: 'AGUARDANDO_HOMOLOGACAO',
-    dsStatusNovo: 'EM_ANDAMENTO',
-    dtMudanca: '2025-02-03T08:45:00',
-    dsJustificativa: 'Chamado encaminhado para a equipe responsável.',
-  },
-]
-
 function formatHistoryDate(value: string) {
+  if (!value) return ''
   const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return value
   const datePart = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short' })
     .format(date)
     .replace('.', '')
@@ -88,19 +53,41 @@ function formatHistoryDate(value: string) {
   return `${datePart.charAt(0).toUpperCase()}${datePart.slice(1)}, ${timePart}h`
 }
 
-export function AuditModal({ isOpen, onClose, reportId, codigoProtocolo, statusAtual }: AuditModalProps) {
-  const [history, setHistory] = useState<HistoricoReport[]>([])
+export function AuditModal({ isOpen, onClose, reportId, statusAtual }: AuditModalProps) {
+  const [history, setHistory] = useState<ReportHistory[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     if (!isOpen) return
+    let isActive = true
 
-    // Mock do GET /api/reports/${reportId}/history
-    setHistory(mockHistory.filter((item) => item.idReport === reportId))
+    async function loadHistory() {
+      setIsLoading(true)
+      setError('')
+      setHistory([])
+
+      try {
+        const result = await getReportHistory(reportId)
+        if (isActive) setHistory(result)
+      } catch (loadError) {
+        if (isActive) {
+          setError(loadError instanceof Error ? loadError.message : 'Erro ao carregar histórico da ocorrência')
+        }
+      } finally {
+        if (isActive) setIsLoading(false)
+      }
+    }
+
+    void loadHistory()
+    return () => {
+      isActive = false
+    }
   }, [isOpen, reportId])
 
   if (!isOpen) return null
 
-  const currentStatus = currentStatusMap[statusAtual] ?? statusAtual
+  const currentStatus = statusMap[statusAtual] ?? statusAtual
   const currentStageIndex = auditStages.findIndex((stage) => stage.status === currentStatus)
 
   return createPortal(
@@ -114,7 +101,7 @@ export function AuditModal({ isOpen, onClose, reportId, codigoProtocolo, statusA
         <header className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <h2 id="audit-modal-title" className="font-bold text-zinc-900">Log de Auditoria &amp; Registros</h2>
-            <p className="mt-1 truncate text-xs text-zinc-500">{codigoProtocolo} <span aria-hidden="true">•</span> Acompanhamento Atualizado</p>
+            <p className="mt-1 truncate text-xs text-zinc-500">#SP-2026: Código {reportId} <span aria-hidden="true">•</span> Acompanhamento Atualizado</p>
           </div>
           <button
             type="button"
@@ -126,27 +113,50 @@ export function AuditModal({ isOpen, onClose, reportId, codigoProtocolo, statusA
           </button>
         </header>
 
-        <div className="mt-6 space-y-5">
+        {isLoading && (
+          <p className="mt-6 text-sm text-zinc-500" role="status">Carregando registros...</p>
+        )}
+        {error && (
+          <p className="mt-6 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">{error}</p>
+        )}
+
+        {!isLoading && !error && <div className="mt-6 space-y-5">
           {auditStages.map((stage, index) => {
-            const stageHistory = history.find((item) => item.dsStatusNovo === stage.status)
-            const isCompleted = Boolean(stageHistory) || (currentStageIndex >= index && currentStageIndex >= 0)
+            const stageHistory = [...history].reverse().find((item) => {
+              const mappedStatus = statusMap[item.statusNovo] ?? item.statusNovo
+              return mappedStatus === stage.status
+            })
+            const isCompleted = currentStageIndex >= 0
+              ? index < currentStageIndex
+              : Boolean(stageHistory)
+            const isActive = currentStageIndex >= 0
+              ? index === currentStageIndex
+              : Boolean(stageHistory) && index === auditStages.length - 1
 
             return (
               <div key={stage.status} className="flex items-start gap-3">
-                <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${isCompleted ? 'bg-emerald-700 text-white' : 'bg-zinc-200 text-zinc-500'}`}>
+                <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${isCompleted || isActive ? 'bg-emerald-700 text-white' : 'bg-zinc-200 text-zinc-500'}`}>
                   {index + 1}
                 </div>
                 <div className="min-w-0 pt-0.5">
-                  <p className={`text-sm font-medium ${isCompleted ? 'text-zinc-900' : 'text-zinc-500'}`}>{stage.title}</p>
-                  <p className="mt-1 text-xs text-zinc-400">
-                    {stageHistory ? formatHistoryDate(stageHistory.dtMudanca) : 'Aguardando trâmite'}
-                  </p>
-                  {stageHistory?.dsJustificativa && <p className="mt-1 text-xs leading-4 text-emerald-700 animate-pulse">{stageHistory.dsJustificativa}</p>}
+                  <p className={`text-sm font-medium ${isCompleted || isActive ? 'text-zinc-900' : 'text-zinc-500'}`}>{stage.title}</p>
+                  {isCompleted && stageHistory && (
+                    <p className="mt-1 text-xs text-zinc-400">{formatHistoryDate(stageHistory.dataAlteracao)}</p>
+                  )}
+                  {isActive && (
+                    <>
+                      {stageHistory?.dataAlteracao && <p className="mt-1 text-xs text-zinc-400">{formatHistoryDate(stageHistory.dataAlteracao)}</p>}
+                      <p className="mt-1 text-xs font-medium text-[#12a879] animate-pulse">{stage.activeDescription}</p>
+                    </>
+                  )}
+                  {!isCompleted && !isActive && (
+                    <p className="mt-1 text-xs text-zinc-400">Aguardando trâmite</p>
+                  )}
                 </div>
               </div>
             )
           })}
-        </div>
+        </div>}
       </div>
     </div>,
     document.body,

@@ -1,15 +1,13 @@
 # SampaReport
 
-> **Zeladoria inteligente e transparente para a cidade de São Paulo.**
+> **Zeladoria inteligente e transparente para a cidade de São Paulo. - Citizen Tech**
 
 O SampaReport é uma plataforma de participação cidadã criada para aproximar os moradores da Prefeitura. A aplicação permite registrar problemas de infraestrutura urbana, acompanhar o andamento das solicitações e validar a solução apresentada pelo poder público.
 
 ## Identidade visual
 
-> **Campo para os ícones do projeto:** substitua a imagem abaixo por uma composição com os ícones finais da aplicação, quando estiver disponível.
-
-<p align="center">
-  <img src="./src/assets/prefeitura-logo.png" alt="Logo de referência do SampaReport" width="180">
+<p align="center" style="display:flex;">
+  <img src="./public/SampaReport-logo.png" alt="Logo de referência do SampaReport" title="Logo de Referência do SampaReport" width="85">
 </p>
 
 ## Objetivo
@@ -44,17 +42,21 @@ O projeto busca diminuir a lentidão e a falta de transparência dos chamados de
 | Ícones | React Icons |
 | Backend/API | Java 25, Spring Boot, MVC, BO e DAO |
 | Banco de dados | Oracle SQL e integridade referencial |
-| APIs e nuvem | OpenStreetMap e Cloudinary |
+| APIs e nuvem | OpenStreetMap e Cloudinary (para armazenamento das imagens enviadas) |
 
 ## Estrutura do projeto
 
 ```text
+public/                   # Imagens, ícones e arquivos públicos
 src/
 ├── assets/                 # Imagens, fotos e recursos visuais
 ├── components/             # Componentes reutilizáveis da interface
+│   └── modal/              # Modais da aplicação
 ├── pages/
 │   ├── app/                # Telas da plataforma
+│   ├── error/              # Telas de erro
 │   └── institucional/     # Home, sobre, FAQ, contato e integrantes
+├── services/               # Serviços de integração e regras de negócio
 ├── types/                  # Tipos compartilhados
 ├── App.tsx                 # Rotas principais
 ├── index.css               # Estilos globais
@@ -100,31 +102,29 @@ npm run lint
 
 ### Tela inicial
 
-> **Campo para print 1:** substitua o caminho abaixo pelo print da tela inicial ou da página institucional.
-
-![Print da tela inicial](./docs/screenshots/tela-inicial.png)
+![Print da tela inicial](./public/project-print1.png)
 
 ### Plataforma e feed de ocorrências
 
-> **Campo para print 2:** substitua o caminho abaixo pelo print do feed ou do fluxo de abertura de chamado.
+![Print do feed de ocorrências](./public/project-print2.png)
 
-![Print do feed de ocorrências](./docs/screenshots/feed-ocorrencias.png)
+![Print do painel administrativo](./public/project-print3.png)
 
 ## Links
 
 - **Repositório GitHub:** [GustavoSilva-dev/SampaReport](https://github.com/GustavoSilva-dev/SampaReport)
-- **Aplicação publicada na Vercel:** _inserir URL da publicação_
-- **API Java:** _inserir URL do repositório ou documentação da API_
-- **Vídeo de apresentação no YouTube:** _inserir URL do vídeo de até três minutos_
+- **Aplicação publicada na Vercel:** [SampaReport](https://sampareport-client.vercel.app/)
+- **API Java:** [SampaReport-API](https://sampareport-api.onrender.com)
+- **Vídeo de apresentação no YouTube:** [Assistir ao vídeo](https://www.youtube.com/watch?v=2uLDH8EbUUk)
 
 ## Integrantes
 
 | Foto | Integrante | RM / Turma | Função | LinkedIn | GitHub |
 | --- | --- | --- | --- | --- | --- |
-| <img src="./src/assets/gustavo.jpeg" alt="Foto de Gustavo Soares Silva" width="100"> | **Gustavo Soares Silva** | RM573880<br>1TDSR | Desenvolvedor | [LinkedIn](https://www.linkedin.com/in/gustavo-silva-23575638b/) | [GustavoSilva-dev](https://github.com/GustavoSilva-dev) |
-| <img src="./src/assets/edilson.jpeg" alt="Foto de Edilson Condori" width="100"> | **Edilson Condori** | RM571464<br>1TDSR | Desenvolvedor | [LinkedIn](https://www.linkedin.com/in/edilson-condori/) | [Edilson-Cm](https://github.com/Edilson-Cm) |
-| <img src="./src/assets/brayan.png" alt="Foto de Brayan dos Santos Sousa" width="100"> | **Brayan dos Santos Sousa** | RM564317<br>1TDSR | Desenvolvedor | [LinkedIn](https://www.linkedin.com/in/brayan-dos-santos-sousa/) | [Brayan511](https://github.com/Brayan511) |
-| <img src="./src/assets/breno.jpg" alt="Foto de Breno Henrique de Castro Rocha" width="100"> | **Breno Henrique de Castro Rocha** | RM572922<br>1TDSR | Desenvolvedor | [LinkedIn](https://www.linkedin.com/in/breno-henrique-de-castro-rocha-79b24b24b/) | [BrenoRocha1](https://github.com/BrenoRocha1) |
+| <img src="./src/assets/gustavo.jpeg" alt="Foto de Gustavo Soares Silva" width="100"> | **Gustavo Soares Silva** | RM573880<br>1TDSR | Desenvolvedor Front-End & Tech Lead | [LinkedIn](https://www.linkedin.com/in/gustavo-silva-23575638b/) | [GustavoSilva-dev](https://github.com/GustavoSilva-dev) |
+| <img src="./src/assets/edilson.jpeg" alt="Foto de Edilson Condori" width="100"> | **Edilson Condori** | RM571464<br>1TDSR | Desenvolvedor Back-End | [LinkedIn](https://www.linkedin.com/in/edilson-condori/) | [Edilson-Cm](https://github.com/Edilson-Cm) |
+| <img src="./src/assets/brayan.png" alt="Foto de Brayan dos Santos Sousa" width="100"> | **Brayan dos Santos Sousa** | RM564317<br>1TDSR | Desenvolvedor Python & IA | [LinkedIn](https://www.linkedin.com/in/brayan-dos-santos-sousa/) | [Brayan511](https://github.com/Brayan511) |
+| <img src="./src/assets/breno.jpg" alt="Foto de Breno Henrique de Castro Rocha" width="100"> | **Breno Henrique de Castro Rocha** | RM572922<br>1TDSR | Desenvolvedor do Banco de Dados | [LinkedIn](https://www.linkedin.com/in/breno-henrique-de-castro-rocha-79b24b24b/) | [BrenoRocha1](https://github.com/BrenoRocha1) |
 
 ## Status do projeto
 
